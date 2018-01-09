@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{be2925cc-0b76-49d9-942d-5e2a95a1e6be}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>tagCNC.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
+    <Name>tagCNC</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="tagCNC.ico" />
+    <Content Include="tagCNC.ini" />
+    <Content Include="tagCNC.png" />
+    <Content Include="icons\about.gif" />
+    <Content Include="icons\add.gif" />
+    <Content Include="icons\all.gif" />
+    <Content Include="icons\arduino.gif" />
+    <Content Include="icons\axes.gif" />
+    <Content Include="icons\BC.gif" />
+    <Content Include="icons\bCNC.gif" />
+    <Content Include="icons\BL.gif" />
+    <Content Include="icons\bowl.gif" />
+    <Content Include="icons\box.gif" />
+    <Content Include="icons\BR.gif" />
+    <Content Include="icons\calibrate32.gif" />
+    <Content Include="icons\camera.gif" />
+    <Content Include="icons\camera32.gif" />
+    <Content Include="icons\center.gif" />
+    <Content Include="icons\clean32.gif" />
+    <Content Include="icons\clear.gif" />
+    <Content Include="icons\climb.gif" />
+    <Content Include="icons\clone.gif" />
+    <Content Include="icons\color.gif" />
+    <Content Include="icons\comment.gif" />
+    <Content Include="icons\config.gif" />
+    <Content Include="icons\config32.gif" />
+    <Content Include="icons\control.gif" />
+    <Content Include="icons\conventional.gif" />
+    <Content Include="icons\copy.gif" />
+    <Content Include="icons\cut.gif" />
+    <Content Include="icons\cut32.gif" />
+    <Content Include="icons\debug.gif" />
+    <Content Include="icons\digits.gif" />
+    <Content Include="icons\disable.gif" />
+    <Content Include="icons\down.gif" />
+    <Content Include="icons\drill.gif" />
+    <Content Include="icons\driller.gif" />
+    <Content Include="icons\edge.gif" />
+    <Content Include="icons\edit.gif" />
+    <Content Include="icons\empty.gif" />
+    <Content Include="icons\enable.gif" />
+    <Content Include="icons\endmill.gif" />
+    <Content Include="icons\endmill32.gif" />
+    <Content Include="icons\event.gif" />
+    <Content Include="icons\exit32.gif" />
+    <Content Include="icons\expand.gif" />
+    <Content Include="icons\find.gif" />
+    <Content Include="icons\flatten.gif" />
+    <Content Include="icons\flip-horizontal.gif" />
+    <Content Include="icons\flip-vertical.gif" />
+    <Content Include="icons\font.gif" />
+    <Content Include="icons\freeze.gif" />
+    <Content Include="icons\gantry.gif" />
+    <Content Include="icons\gear.gif" />
+    <Content Include="icons\gear32.gif" />
+    <Content Include="icons\global.gif" />
+    <Content Include="icons\globe.gif" />
+    <Content Include="icons\grbl_build.gif" />
+    <Content Include="icons\grbl_check.gif" />
+    <Content Include="icons\grbl_help.gif" />
+    <Content Include="icons\grbl_params.gif" />
+    <Content Include="icons\grbl_settings.gif" />
+    <Content Include="icons\grbl_startup.gif" />
+    <Content Include="icons\grbl_state.gif" />
+    <Content Include="icons\grid.gif" />
+    <Content Include="icons\halftone.gif" />
+    <Content Include="icons\hand.gif" />
+    <Content Include="icons\heightmap.gif" />
+    <Content Include="icons\hilbert.gif" />
+    <Content Include="icons\home.gif" />
+    <Content Include="icons\home32.gif" />
+    <Content Include="icons\info.gif" />
+    <Content Include="icons\inkscape.gif" />
+    <Content Include="icons\jigsaw.gif" />
+    <Content Include="icons\lamp.gif" />
+    <Content Include="icons\layers.gif" />
+    <Content Include="icons\LC.gif" />
+    <Content Include="icons\level.gif" />
+    <Content Include="icons\level32.gif" />
+    <Content Include="icons\link.gif" />
+    <Content Include="icons\load.gif" />
+    <Content Include="icons\lock.gif" />
+    <Content Include="icons\margins.gif" />
+    <Content Include="icons\material.gif" />
+    <Content Include="icons\measure.gif" />
+    <Content Include="icons\midi2cnc.gif" />
+    <Content Include="icons\move.gif" />
+    <Content Include="icons\move32.gif" />
+    <Content Include="icons\new.gif" />
+    <Content Include="icons\new32.gif" />
+    <Content Include="icons\ok.gif" />
+    <Content Include="icons\open32.gif" />
+    <Content Include="icons\optimize.gif" />
+    <Content Include="icons\origin.gif" />
+    <Content Include="icons\origin32.gif" />
+    <Content Include="icons\pan.gif" />
+    <Content Include="icons\paste.gif" />
+    <Content Include="icons\paste32.gif" />
+    <Content Include="icons\pause.gif" />
+    <Content Include="icons\pause32.gif" />
+    <Content Include="icons\pencil.gif" />
+    <Content Include="icons\pocket.gif" />
+    <Content Include="icons\probe32.gif" />
+    <Content Include="icons\profile32.gif" />
+    <Content Include="icons\pyrograph.gif" />
+    <Content Include="icons\quit.gif" />
+    <Content Include="icons\rapid.gif" />
+    <Content Include="icons\RC.gif" />
+    <Content Include="icons\redo.gif" />
+    <Content Include="icons\refresh.gif" />
+    <Content Include="icons\rename.gif" />
+    <Content Include="icons\replace.gif" />
+    <Content Include="icons\reset.gif" />
+    <Content Include="icons\reverse.gif" />
+    <Content Include="icons\rotate.gif" />
+    <Content Include="icons\rotate180.gif" />
+    <Content Include="icons\rotate270.gif" />
+    <Content Include="icons\rotate90.gif" />
+    <Content Include="icons\ruler.gif" />
+    <Content Include="icons\save.gif" />
+    <Content Include="icons\save32.gif" />
+    <Content Include="icons\select.gif" />
+    <Content Include="icons\select_all.gif" />
+    <Content Include="icons\select_invert.gif" />
+    <Content Include="icons\select_layer.gif" />
+    <Content Include="icons\select_none.gif" />
+    <Content Include="icons\sep.gif" />
+    <Content Include="icons\serial.gif" />
+    <Content Include="icons\serial32.gif" />
+    <Content Include="icons\setsquare32.gif" />
+    <Content Include="icons\shortcut.gif" />
+    <Content Include="icons\sketch.gif" />
+    <Content Include="icons\spinningtop.gif" />
+    <Content Include="icons\spirograph.gif" />
+    <Content Include="icons\start.gif" />
+    <Content Include="icons\start32.gif" />
+    <Content Include="icons\startPendant.gif" />
+    <Content Include="icons\stats.gif" />
+    <Content Include="icons\stock32.gif" />
+    <Content Include="icons\stop.gif" />
+    <Content Include="icons\stop32.gif" />
+    <Content Include="icons\stopPendant.gif" />
+    <Content Include="icons\swap.gif" />
+    <Content Include="icons\tab.gif" />
+    <Content Include="icons\target32.gif" />
+    <Content Include="icons\TC.gif" />
+    <Content Include="icons\terminal.gif" />
+    <Content Include="icons\text.gif" />
+    <Content Include="icons\tile.gif" />
+    <Content Include="icons\TL.gif" />
+    <Content Include="icons\toggle.gif" />
+    <Content Include="icons\tools.gif" />
+    <Content Include="icons\TR.gif" />
+    <Content Include="icons\triangle_down.gif" />
+    <Content Include="icons\undo.gif" />
+    <Content Include="icons\unlock.gif" />
+    <Content Include="icons\up.gif" />
+    <Content Include="icons\view.gif" />
+    <Content Include="icons\workspace.gif" />
+    <Content Include="icons\x.gif" />
+    <Content Include="icons\zigzag.gif" />
+    <Content Include="icons\zoom.gif" />
+    <Content Include="icons\zoom_in.gif" />
+    <Content Include="icons\zoom_on.gif" />
+    <Content Include="icons\zoom_out.gif" />
+    <Content Include="pendant\camera.html" />
+    <Content Include="pendant\fastclick.js" />
+    <Content Include="pendant\index.html" />
+    <Content Include="pendant\jquery-2.1.4.min.js" />
+    <Content Include="pendant\pure-min.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EngravePage.py" />
+    <Compile Include="Tag.py" />
+    <Compile Include="tagCNC.py" />
+    <Compile Include="Camera.py" />
+    <Compile Include="CNC.py" />
+    <Compile Include="CNCCanvas.py" />
+    <Compile Include="CNCList.py" />
+    <Compile Include="CNCRibbon.py" />
+    <Compile Include="ControlPage.py" />
+    <Compile Include="EditorPage.py" />
+    <Compile Include="FilePage.py" />
+    <Compile Include="lib\bFileDialog.py" />
+    <Compile Include="lib\bmath.py" />
+    <Compile Include="lib\bpath.py" />
+    <Compile Include="lib\dxf.py" />
+    <Compile Include="lib\imageToGcode.py" />
+    <Compile Include="lib\log.py" />
+    <Compile Include="lib\midiparser.py" />
+    <Compile Include="lib\rexx.py" />
+    <Compile Include="lib\spline.py" />
+    <Compile Include="lib\stl.py" />
+    <Compile Include="lib\tkDialogs.py" />
+    <Compile Include="lib\tkExtra.py" />
+    <Compile Include="lib\ttf.py" />
+    <Compile Include="lib\undo.py" />
+    <Compile Include="lib\Unicode.py" />
+    <Compile Include="Pendant.py" />
+    <Compile Include="plugins\text.py" />
+    <Compile Include="ProbePage.py" />
+    <Compile Include="Ribbon.py" />
+    <Compile Include="Sender.py" />
+    <Compile Include="TerminalPage.py" />
+    <Compile Include="ToolsPage.py" />
+    <Compile Include="Updates.py" />
+    <Compile Include="Utils.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="icons" />
+    <Folder Include="lib" />
+    <Folder Include="pendant" />
+    <Folder Include="plugins" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
