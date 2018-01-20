@@ -135,11 +135,9 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Engraving", app)
 
-        #self.feedrate = DoubleVar()
-        #self.plungerate = DoubleVar()
         self.clearanceZ = DoubleVar()
-        ##self.retractZ = DoubleVar()
-        depth = DoubleVar()
+        self.retractZ = DoubleVar()
+        self.depth = DoubleVar()
         
 
         # populate gstate dictionary
@@ -230,7 +228,7 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(b)
 
         col += 1
-        self.depth = tkExtra.FloatEntry(self, background="White", width=5, textvariable=depth)
+        self.depth = tkExtra.FloatEntry(self, background="White", width=5, textvariable=self.depth)
         self.depth.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.depth, _("How Far to carve into piece"))
         self.depth.set(Utils.getStr("Engraving", 'depth'))

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5c69279a-0502-4edf-934c-1b06abbb7c94}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Camera.py</StartupFile>
+    <StartupFile>tagCNC.py</StartupFile>
     <SearchPath>fonts\;icons\;lib\;locale\;pendant\;plugins\;template\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -191,6 +191,7 @@
     <Content Include="tagCNC.ico" />
     <Content Include="tagCNC.ini" />
     <Content Include="tagCNC.png" />
+    <Content Include="template\50A.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.py" />
@@ -242,6 +243,7 @@
     <Folder Include="lib" />
     <Folder Include="pendant" />
     <Folder Include="plugins" />
+    <Folder Include="template\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />

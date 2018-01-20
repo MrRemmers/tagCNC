@@ -207,6 +207,7 @@ class Application(Toplevel,Sender):
         #region TabTextEntry
         tabTextEntry = Frame(self.notebook)
         i=0
+        self.origin = {}
         for ent in self.localtags.tag:
             self.itemstoEngrave.append(NamePlate())
             self.itemstoEngrave[i].numTag = i
@@ -569,6 +570,7 @@ class Application(Toplevel,Sender):
 
         self.canvas.cameraOff()
         Sender.quit(self)
+        self.saveTagConfig()
         self.saveConfig()
         self.destroy()
         if Utils.errors and Utils._errorReport:
@@ -2464,8 +2466,9 @@ class Application(Toplevel,Sender):
             self.setStatus(_("Text abort: please select a font file"))
             return
         depth = -float(self.engrave.depth.get())
+
         #clear out any old tag information
-        self.initializeGcodeforText()
+        self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
         
         #get probe offset by probing tool.
 
@@ -2481,7 +2484,6 @@ class Application(Toplevel,Sender):
             t = self.localtags.tag[plate.numTag]
             #self.drawText(plate.text.get(), thetag['x0'], thetag['y0'], thetag['x1'], thetag['y1'])
             ##Get inputs
-            #TODO assuming that this means the height of the font in mm
             tagHeight = abs(t['y1']-t['y0'])
             tagWidth = abs(t['x1']-t['x0'])
             textToWrite   = plate.text.get()
@@ -2604,13 +2606,9 @@ class Application(Toplevel,Sender):
             for p in cont:
                 block.append(CNC.gline(xO + p.x * scale, yO + p.y * scale))
 
-    def initializeGcodeforText(self):
+    def initializeGcodeforText(self, originX, originY, originZ):
         #custom header just for tags
-        headGcode = """$H 
-$G 
-G10L20P0X288Y168Z33 
-M3 
-S12000"""
+        headGcode = "$H \n $G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
         self.gcode.header = headGcode
         #clear out any old tag information
         self.newFile(prompt = FALSE)
@@ -2618,6 +2616,10 @@ S12000"""
         #self.refresh()
         #self.gcode.headerFooter()
 
+    def saveTagConfig(self):
+        Utils.setStr("Text", 'selectedfont', self.pfont.fontCombo.get())
+        Utils.setStr("Engraving", 'depth', self.engrave.depth.get())
+        #TODO clearance height
 
 def usage(rc):
     sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, __version__, __date__))
