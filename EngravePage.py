@@ -82,9 +82,24 @@ class FontFrame(CNCRibbon.PageLabelFrame):
         self.fontfile = StringVar()
         charspacing = IntVar()
         #wordspacing = IntVar()
+        self.templateFile = StringVar()
+
+        tagPath = os.path.join(Utils.prgpath, 'template')
+
+        col,row=0,0
+        b = Label(self, text=_("Template:"))
+        b.grid(row=row,column=col,sticky=E)
+        self.addWidget(b)
+
+        templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
+        self.TemplateCombo = ttk.Combobox(self, width=16, textvariable=self.templateFile, values = templatefiles)
+        self.TemplateCombo.grid(row=row, column=col+1, sticky=EW)
+        tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
+        self.TemplateCombo.set(Utils.getStr("Text", 'selectedtemplate'))
 
         # ---
-        col,row=0,0
+        row += 1
+        col = 0
         b = Label(self, text=_("Font:"))
         b.grid(row=row,column=col,sticky=E)
         self.addWidget(b)
@@ -209,10 +224,10 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(b)
 
         col += 1
-        self.retractZentry = tkExtra.FloatEntry(self, background="White", width=5)
+        self.retractZentry = tkExtra.FloatEntry(self, background="White", width=5, textvariable=self.retractZ)
         self.retractZentry.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.retractZentry, _("Height above between Tags"))
-        self.retractZentry.set(CNC.vars["safe"])
+        self.retractZentry.set(Utils.getStr("Engraving", 'retractZ'))
         self.addWidget(self.retractZentry)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)

@@ -197,7 +197,9 @@ class Application(Toplevel,Sender):
         frame = Frame(self.paned)
         self.paned.add(frame)
 
-        self.localtags = Fixture('50A.xml')
+        
+        #tagFileName = self.pfont.TemplateCombo.get()
+        self.localtags = Fixture('96A.xml')
         self.itemstoEngrave = []
 
         #s = ttk.Style()
@@ -2466,6 +2468,8 @@ class Application(Toplevel,Sender):
             self.setStatus(_("Text abort: please select a font file"))
             return
         depth = -float(self.engrave.depth.get())
+        retractZ = float(self.engrave.retractZ.get())
+        clearanceZ = float(self.engrave.clearanceZ.get())
 
         #clear out any old tag information
         self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
@@ -2482,7 +2486,6 @@ class Application(Toplevel,Sender):
         for plate in self.itemstoEngrave:
             
             t = self.localtags.tag[plate.numTag]
-            #self.drawText(plate.text.get(), thetag['x0'], thetag['y0'], thetag['x1'], thetag['y1'])
             ##Get inputs
             tagHeight = abs(t['y1']-t['y0'])
             tagWidth = abs(t['x1']-t['x0'])
@@ -2494,7 +2497,7 @@ class Application(Toplevel,Sender):
             #Check parameters!!!
             if textToWrite == "":
                 textToWrite = "Nel mezzo del cammin di nostra vita..."
-                return
+                continue
 
             #Init blocks
             blocks = []
@@ -2565,14 +2568,14 @@ class Application(Toplevel,Sender):
                     if(not gc):
                         gc = font.get_glyph_contours(0)#standard glyph for missing glyphs (complex glyph)
                     if(gc and not c==' '): #FIXME: for some reason space is not mapped correctly!!!
-                        self.writeGlyphContour(block, font, gc, fontSize, depth, xOffset, yOffset)
+                        self.writeGlyphContour(block, font, gc, fontSize, depth, xOffset, yOffset, retractZ)
                     if glyphIndx < len(adv):
                         xOffset += adv[glyphIndx]
                     else:
                         xOffset += 1
                     glyphIndxLast = glyphIndx
             #Gcode Zsafe
-            block.append(CNC.zsafe())
+            block.append(CNC.zexit(clearanceZ))
 
             #self.gcode.moveLines(block.path, dx, dy)
             blocks.append(block)
@@ -2592,14 +2595,15 @@ class Application(Toplevel,Sender):
         self.refresh()
 
     	#Write GCode from glyph conrtours
-    def writeGlyphContour(self,block,font,contours,fontSize,depth,xO, yO):
+    def writeGlyphContour(self,block,font,contours,fontSize,depth,xO, yO, retractZ):
         #width = font.header.x_max - font.header.x_min
         #height = font.header.y_max - font.header.y_min
         scale = fontSize / font.header.units_per_em
         xO = xO * fontSize
         yO = yO * fontSize
         for cont in contours:
-            block.append(CNC.zsafe())
+            #block.append(CNC.zsafe())
+            block.append(CNC.zexit(retractZ))
             block.append(CNC.grapid(xO + cont[0].x * scale , yO + cont[0].y * scale))
             block.append(CNC.zenter(depth))
             block.append(CNC.gcode(1, [("f",CNC.vars["cutfeed"])]))
@@ -2612,9 +2616,6 @@ class Application(Toplevel,Sender):
         self.gcode.header = headGcode
         #clear out any old tag information
         self.newFile(prompt = FALSE)
-        #self.gcode.init()
-        #self.refresh()
-        #self.gcode.headerFooter()
 
     def saveTagConfig(self):
         Utils.setStr("Text", 'selectedfont', self.pfont.fontCombo.get())

@@ -22,9 +22,10 @@ class Fixture(object):
     tag = []
     def __init__(self, template):
         tagPath = os.path.join(Utils.prgpath, 'template')
-        templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
+        #templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
+        templatefile = template
 
-        doc = untangle.parse(join(tagPath,templatefiles[0]))
+        doc = untangle.parse(join(tagPath,templatefile))
         self.origin = {'X': float(doc.JigTemplate.Origin.X.cdata), 'Y': float(doc.JigTemplate.Origin.Y.cdata),'Z': float(doc.JigTemplate.Origin.Z.cdata)}
         self.perimeter = {'x0': float(doc.JigTemplate.Perimeter.X0.cdata), 'y0':float(doc.JigTemplate.Perimeter.Y0.cdata), 
                           'x1':float(doc.JigTemplate.Perimeter.X1.cdata), 'y1':float(doc.JigTemplate.Perimeter.Y1.cdata)}

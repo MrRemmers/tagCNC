@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+DIR=`dirname $0`
+PYTHONPATH=${DIR}:${DIR}/lib:${DIR}/plugins
+export DIR PYTHONPATH
+if [ .$PYTHON = . ]; then
+	PYTHON=python
+fi
+${PYTHON} ${DIR}/tagCNC.py $*
+#python -m cProfile -o tagCNC.out ${DIR}/tagCNC.py $*
