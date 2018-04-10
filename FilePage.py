@@ -55,59 +55,60 @@ class _RecentMenuButton(Ribbon.MenuButton):
 # File Group
 #===============================================================================
 class FileGroup(CNCRibbon.ButtonGroup):
-	def __init__(self, master, app):
-		CNCRibbon.ButtonGroup.__init__(self, master, N_("File"), app)
-		self.grid3rows()
+    def __init__(self, master, app):
+        CNCRibbon.ButtonGroup.__init__(self, master, N_("File"), app)
+        self.grid3rows()
 
-		# ---
-		col,row=0,0
-		b = Ribbon.LabelButton(self.frame, self, "<<New>>",
-				image=Utils.icons["new32"],
-				text=_("New"),
-				compound=TOP,
-				background=Ribbon._BACKGROUND)
-		b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
-		tkExtra.Balloon.set(b, _("New gcode/dxf file"))
-		self.addWidget(b)
+        # ---
+        col,row=0,0
+        #b = Ribbon.LabelButton(self.frame, self, "<<New>>",
+        #		image=Utils.icons["new32"],
+        #		text=_("New"),
+        #		compound=TOP,
+        #		background=Ribbon._BACKGROUND)
+        #b.grid(row=row, column=col, rowspan=3, padx=0, pady=0, sticky=NSEW)
+        #tkExtra.Balloon.set(b, _("New gcode/dxf file"))
+        #self.addWidget(b)
 
-		# ---
-		col,row=1,0
-		b = Ribbon.LabelButton(self.frame, self, "<<Open>>",
-				image=Utils.icons["open32"],
-				background=Ribbon._BACKGROUND)
-		b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
-		tkExtra.Balloon.set(b, _("Open existing gcode/dxf file [Ctrl-O]"))
-		self.addWidget(b)
+        ## ---
+        #col,row=1,0
+        b = Ribbon.LabelButton(self.frame, self, "<<Open>>",
+                image=Utils.icons["open32"],
+                background=Ribbon._BACKGROUND)
+        b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
+        tkExtra.Balloon.set(b, _("Open existing gcode/dxf file [Ctrl-O]"))
+        self.addWidget(b)
 
-		col,row=1,2
-		b = _RecentMenuButton(self.frame, None,
-				text=_("Open"),
-				image=Utils.icons["triangle_down"],
-				compound=RIGHT,
-				background=Ribbon._BACKGROUND)
-		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-		tkExtra.Balloon.set(b, _("Open recent file"))
-		self.addWidget(b)
+        #col,row=1,2
+        col,row=1,0
+        b = _RecentMenuButton(self.frame, None,
+                text=_("Open"),
+                image=Utils.icons["triangle_down"],
+                compound=RIGHT,
+                background=Ribbon._BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        tkExtra.Balloon.set(b, _("Open recent file"))
+        self.addWidget(b)
 
-		# ---
-		col,row=2,0
-		b = Ribbon.LabelButton(self.frame, self, "<<Save>>",
-				image=Utils.icons["save32"],
-				command=app.save,
-				background=Ribbon._BACKGROUND)
-		b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
-		tkExtra.Balloon.set(b, _("Save gcode/dxf file [Ctrl-S]"))
-		self.addWidget(b)
+        # ---
+        col,row=2,0
+        b = Ribbon.LabelButton(self.frame, self, "<<Save>>",
+                image=Utils.icons["save32"],
+                command=app.save,
+                background=Ribbon._BACKGROUND)
+        b.grid(row=row, column=col, rowspan=2, padx=0, pady=0, sticky=NSEW)
+        tkExtra.Balloon.set(b, _("Save gcode/dxf file [Ctrl-S]"))
+        self.addWidget(b)
 
-		col,row=2,2
-		b = Ribbon.LabelButton(self.frame, self, "<<SaveAs>>",
-				text=_("Save"),
-				image=Utils.icons["triangle_down"],
-				compound=RIGHT,
-				background=Ribbon._BACKGROUND)
-		b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
-		tkExtra.Balloon.set(b, _("Save gcode/dxf AS"))
-		self.addWidget(b)
+        col,row=2,2
+        b = Ribbon.LabelButton(self.frame, self, "<<SaveAs>>",
+                text=_("Save"),
+                image=Utils.icons["triangle_down"],
+                compound=RIGHT,
+                background=Ribbon._BACKGROUND)
+        b.grid(row=row, column=col, padx=0, pady=0, sticky=NSEW)
+        tkExtra.Balloon.set(b, _("Save gcode/dxf AS"))
+        self.addWidget(b)
 
 #===============================================================================
 # Options Group
@@ -310,5 +311,6 @@ class FilePage(CNCRibbon.Page):
 	# Add a widget in the widgets list to enable disable during the run
 	#----------------------------------------------------------------------
 	def register(self):
-		self._register((FileGroup, PendantGroup, OptionsGroup, CloseGroup),
+		self._register((PendantGroup, OptionsGroup, CloseGroup),
 			(SerialFrame,))
+        #FileGroup,

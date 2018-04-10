@@ -2458,9 +2458,6 @@ class Application(Toplevel,Sender):
         return Utils.config.set(section, item, value)
 #------------------------------------------------------------------------------
 
-    def calculateGcode(self):
-        pass
-
     def drawText(self):
         fontPath = os.path.join(Utils.prgpath, 'fonts')
         fontFileName   = join(fontPath, self.pfont.fontCombo.get())
@@ -2613,6 +2610,8 @@ class Application(Toplevel,Sender):
     def initializeGcodeforText(self, originX, originY, originZ):
         #custom header just for tags
         headGcode = "$H \n $G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
+        # $H = means home the machine.  $G means View gcode parser state
+        #headGcode = "$G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
         self.gcode.header = headGcode
         #clear out any old tag information
         self.newFile(prompt = FALSE)
@@ -2620,6 +2619,8 @@ class Application(Toplevel,Sender):
     def saveTagConfig(self):
         Utils.setStr("Text", 'selectedfont', self.pfont.fontCombo.get())
         Utils.setStr("Engraving", 'depth', self.engrave.depth.get())
+        Utils.setStr("Engraving", 'clearance', self.engrave.clearanceZ.get())
+        Utils.setStr("Engraving", 'retract', self.engrave.retractZ.get())
         #TODO clearance height
 
 def usage(rc):

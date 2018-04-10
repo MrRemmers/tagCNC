@@ -222,63 +222,63 @@ class DROFrame(CNCRibbon.PageFrame):
 		self.zmachine = Label(self, font=DROFrame.dro_mpos, background="White", anchor=E)
 		self.zmachine.grid(row=row,column=col,padx=1,sticky=EW)
 
-		# Set buttons
-		row += 1
-		col = 1
+		## Set buttons
+		#row += 1
+		#col = 1
 
-		self.xzero = Button(self, text="X=0",
-				command=self.setX0,
-				activebackground="LightYellow",
-				padx=2, pady=1)
-		self.xzero.grid(row=row, column=col, pady=0, sticky=EW)
-		tkExtra.Balloon.set(self.xzero, _("Set X coordinate to zero (or to typed coordinate in WPos)"))
-		self.addWidget(self.xzero)
+		#self.xzero = Button(self, text="X=0",
+		#		command=self.setX0,
+		#		activebackground="LightYellow",
+		#		padx=2, pady=1)
+		#self.xzero.grid(row=row, column=col, pady=0, sticky=EW)
+		#tkExtra.Balloon.set(self.xzero, _("Set X coordinate to zero (or to typed coordinate in WPos)"))
+		#self.addWidget(self.xzero)
 
-		col += 1
-		self.yzero = Button(self, text="Y=0",
-				command=self.setY0,
-				activebackground="LightYellow",
-				padx=2, pady=1)
-		self.yzero.grid(row=row, column=col, pady=0, sticky=EW)
-		tkExtra.Balloon.set(self.yzero, _("Set Y coordinate to zero (or to typed coordinate in WPos)"))
-		self.addWidget(self.yzero)
+		#col += 1
+		#self.yzero = Button(self, text="Y=0",
+		#		command=self.setY0,
+		#		activebackground="LightYellow",
+		#		padx=2, pady=1)
+		#self.yzero.grid(row=row, column=col, pady=0, sticky=EW)
+		#tkExtra.Balloon.set(self.yzero, _("Set Y coordinate to zero (or to typed coordinate in WPos)"))
+		#self.addWidget(self.yzero)
 
-		col += 1
-		self.zzero = Button(self, text="Z=0",
-				command=self.setZ0,
-				activebackground="LightYellow",
-				padx=2, pady=1)
-		self.zzero.grid(row=row, column=col, pady=0, sticky=EW)
-		tkExtra.Balloon.set(self.zzero, _("Set Z coordinate to zero (or to typed coordinate in WPos)"))
-		self.addWidget(self.zzero)
+		#col += 1
+		#self.zzero = Button(self, text="Z=0",
+		#		command=self.setZ0,
+		#		activebackground="LightYellow",
+		#		padx=2, pady=1)
+		#self.zzero.grid(row=row, column=col, pady=0, sticky=EW)
+		#tkExtra.Balloon.set(self.zzero, _("Set Z coordinate to zero (or to typed coordinate in WPos)"))
+		#self.addWidget(self.zzero)
 
-		# Set buttons
-		row += 1
-		col = 1
-		f = Frame(self)
-		f.grid(row=row, column=col, columnspan=3, pady=0, sticky=EW)
+		## Set buttons
+		#row += 1
+		#col = 1
+		#f = Frame(self)
+		#f.grid(row=row, column=col, columnspan=3, pady=0, sticky=EW)
 
-		b = Button(f, text=_("Set WPOS"),
-				image=Utils.icons["origin"],
-				compound=LEFT,
-				activebackground="LightYellow",
-				command=lambda s=self: s.event_generate("<<SetWPOS>>"),
-				padx=2, pady=1)
-		b.pack(side=LEFT,fill=X,expand=YES)
-		tkExtra.Balloon.set(b, _("Set WPOS to mouse location"))
-		self.addWidget(b)
+		#b = Button(f, text=_("Set WPOS"),
+		#		image=Utils.icons["origin"],
+		#		compound=LEFT,
+		#		activebackground="LightYellow",
+		#		command=lambda s=self: s.event_generate("<<SetWPOS>>"),
+		#		padx=2, pady=1)
+		#b.pack(side=LEFT,fill=X,expand=YES)
+		#tkExtra.Balloon.set(b, _("Set WPOS to mouse location"))
+		#self.addWidget(b)
 
-		#col += 2
-		b = Button(f, text=_("Move Gantry"),
-				image=Utils.icons["gantry"],
-				compound=LEFT,
-				activebackground="LightYellow",
-				command=lambda s=self: s.event_generate("<<MoveGantry>>"),
-				padx=2, pady=1)
-		#b.grid(row=row, column=col, pady=0, sticky=EW)
-		b.pack(side=RIGHT,fill=X,expand=YES)
-		tkExtra.Balloon.set(b, _("Move gantry to mouse location [g]"))
-		self.addWidget(b)
+		##col += 2
+		#b = Button(f, text=_("Move Gantry"),
+		#		image=Utils.icons["gantry"],
+		#		compound=LEFT,
+		#		activebackground="LightYellow",
+		#		command=lambda s=self: s.event_generate("<<MoveGantry>>"),
+		#		padx=2, pady=1)
+		##b.grid(row=row, column=col, pady=0, sticky=EW)
+		#b.pack(side=RIGHT,fill=X,expand=YES)
+		#tkExtra.Balloon.set(b, _("Move gantry to mouse location [g]"))
+		#self.addWidget(b)
 
 		self.grid_columnconfigure(1, weight=1)
 		self.grid_columnconfigure(2, weight=1)

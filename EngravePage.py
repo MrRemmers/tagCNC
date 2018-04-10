@@ -116,19 +116,19 @@ class FontFrame(CNCRibbon.PageLabelFrame):
         self.addWidget(self.fontCombo)
 
         # ---
-        row += 1
-        col = 0
-        b = Label(self, text=_("Character Spacing:"))
-        b.grid(row=row,column=col,sticky=E)
+        #row += 1
+        #col = 0
+        #b = Label(self, text=_("Character Spacing:"))
+        #b.grid(row=row,column=col,sticky=E)
 
-        col += 1
-        #self.charspacingentry = tkExtra.IntegerEntry(self, background="White", width=1, textvariable= charspacing)
-        self.charspacingentry = Entry(self, width=1, textvariable= charspacing)
-        self.charspacingentry.grid(row=row, column=col, sticky=EW)
-        tkExtra.Balloon.set(self.charspacingentry, _("Adjust Spacing between Characters"))
-        #self.charspacingentry.set(Utils.getStr("Text", 'charspacing'))
-        charspacing.set(Utils.getStr("Text", 'charspacing'))
-        self.addWidget(self.charspacingentry)
+        #col += 1
+        ##self.charspacingentry = tkExtra.IntegerEntry(self, background="White", width=1, textvariable= charspacing)
+        #self.charspacingentry = Entry(self, width=1, textvariable= charspacing)
+        #self.charspacingentry.grid(row=row, column=col, sticky=EW)
+        #tkExtra.Balloon.set(self.charspacingentry, _("Adjust Spacing between Characters"))
+        ##self.charspacingentry.set(Utils.getStr("Text", 'charspacing'))
+        #charspacing.set(Utils.getStr("Text", 'charspacing'))
+        #self.addWidget(self.charspacingentry)
 
         ## ---
         #row += 1
@@ -154,7 +154,6 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.retractZ = DoubleVar()
         self.depth = DoubleVar()
         
-
         # populate gstate dictionary
         self.gstate = {}	# $G state results widget dictionary
         #for k,v in DISTANCE_MODE.items():
@@ -253,6 +252,11 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         b = Label(self, text=_("mm"))
         b.grid(row=row,column=col+1,sticky=E)
         self.addWidget(b)
+
+#===============================================================================
+# Tool Frame
+#===============================================================================
+#TODO
 
 #===============================================================================
 # Engrave Page
