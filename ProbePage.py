@@ -387,177 +387,11 @@ class ProbeFrame(CNCRibbon.PageFrame):
 		lframe().grid_columnconfigure(2,weight=1)
 		lframe().grid_columnconfigure(3,weight=1)
 
-		#----------------------------------------------------------------
-		# Center probing
-		#----------------------------------------------------------------
-		lframe = tkExtra.ExLabelFrame(self, text=_("Center"), foreground="DarkBlue")
-		lframe.pack(side=TOP, expand=YES, fill=X)
-
-		Label(lframe(), text=_("Diameter:")).pack(side=LEFT)
-		self.diameter = tkExtra.FloatEntry(lframe(), background="White")
-		self.diameter.pack(side=LEFT, expand=YES, fill=X)
-		tkExtra.Balloon.set(self.diameter, _("Probing ring internal diameter"))
-		self.addWidget(self.diameter)
-
-		# ---
-		b = Button(lframe(),
-				image=Utils.icons["target32"],
-				text=_("Center"),
-				compound=TOP,
-				command=self.probeCenter,
-				width=48,
-				padx=5, pady=0)
-		b.pack(side=RIGHT)
-		self.addWidget(b)
-		tkExtra.Balloon.set(b, _("Center probing using a ring"))
+		#lframe().grid_columnconfigure(1, weight=1)
+		#lframe().grid_columnconfigure(2, weight=1)
 
 		#----------------------------------------------------------------
-		# Align / Orient / Square ?
-		#----------------------------------------------------------------
-		lframe = tkExtra.ExLabelFrame(self, text=_("Orient"), foreground="DarkBlue")
-		lframe.pack(side=TOP, expand=YES, fill=X)
-
-		# ---
-		row, col = 0,0
-
-		Label(lframe(), text=_("Markers:")).grid(row=row, column=col, sticky=E)
-		col += 1
-
-		self.scale_orient = Scale(lframe(),
-					from_=0, to_=0,
-					orient=HORIZONTAL,
-					showvalue=1,
-					state=DISABLED,
-					command=self.changeMarker)
-		self.scale_orient.grid(row=row, column=col, columnspan=2, sticky=EW)
-		tkExtra.Balloon.set(self.scale_orient, _("Select orientation marker"))
-
-		# Add new point
-		col += 2
-		b = Button(lframe(), text=_("Add"),
-				image=Utils.icons["add"],
-				compound=LEFT,
-				command=lambda s=self: s.event_generate("<<AddMarker>>"),
-				padx = 1,
-				pady = 1)
-		b.grid(row=row, column=col, sticky=NSEW)
-		self.addWidget(b)
-		tkExtra.Balloon.set(b, _("Add an orientation marker. " \
-				"Jog first the machine to the marker position " \
-				"and then click on canvas to add the marker."))
-
-		# ----
-		row += 1
-		col = 0
-		Label(lframe(), text=_("Gcode:")).grid(row=row, column=col, sticky=E)
-		col += 1
-		self.x_orient = tkExtra.FloatEntry(lframe(), background="White")
-		self.x_orient.grid(row=row, column=col, sticky=EW)
-		self.x_orient.bind("<FocusOut>", self.orientUpdate)
-		self.x_orient.bind("<Return>",   self.orientUpdate)
-		self.x_orient.bind("<KP_Enter>", self.orientUpdate)
-		tkExtra.Balloon.set(self.x_orient, _("GCode X coordinate of orientation point"))
-
-		col += 1
-		self.y_orient = tkExtra.FloatEntry(lframe(), background="White")
-		self.y_orient.grid(row=row, column=col, sticky=EW)
-		self.y_orient.bind("<FocusOut>", self.orientUpdate)
-		self.y_orient.bind("<Return>",   self.orientUpdate)
-		self.y_orient.bind("<KP_Enter>", self.orientUpdate)
-		tkExtra.Balloon.set(self.y_orient, _("GCode Y coordinate of orientation point"))
-
-		# Buttons
-		col += 1
-		b = Button(lframe(), text=_("Delete"),
-				image=Utils.icons["x"],
-				compound=LEFT,
-				command = self.orientDelete,
-				padx = 1,
-				pady = 1)
-		b.grid(row=row, column=col, sticky=EW)
-		self.addWidget(b)
-		tkExtra.Balloon.set(b, _("Delete current marker"))
-
-		# ---
-		row += 1
-		col = 0
-
-		Label(lframe(), text="WPos:").grid(row=row, column=col, sticky=E)
-		col += 1
-		self.xm_orient = tkExtra.FloatEntry(lframe(), background="White")
-		self.xm_orient.grid(row=row, column=col, sticky=EW)
-		self.xm_orient.bind("<FocusOut>", self.orientUpdate)
-		self.xm_orient.bind("<Return>",   self.orientUpdate)
-		self.xm_orient.bind("<KP_Enter>", self.orientUpdate)
-		tkExtra.Balloon.set(self.xm_orient, _("Machine X coordinate of orientation point"))
-
-		col += 1
-		self.ym_orient = tkExtra.FloatEntry(lframe(), background="White")
-		self.ym_orient.grid(row=row, column=col, sticky=EW)
-		self.ym_orient.bind("<FocusOut>", self.orientUpdate)
-		self.ym_orient.bind("<Return>",   self.orientUpdate)
-		self.ym_orient.bind("<KP_Enter>", self.orientUpdate)
-		tkExtra.Balloon.set(self.ym_orient, _("Machine Y coordinate of orientation point"))
-
-		# Buttons
-		col += 1
-		b = Button(lframe(), text=_("Clear"),
-				image=Utils.icons["clear"],
-				compound=LEFT,
-				command = self.orientClear,
-				padx = 1,
-				pady = 1)
-		b.grid(row=row, column=col, sticky=EW)
-		self.addWidget(b)
-		tkExtra.Balloon.set(b, _("Delete all markers"))
-
-		# ---
-		row += 1
-		col = 0
-		Label(lframe(), text=_("Angle:")).grid(row=row, column=col, sticky=E)
-
-		col += 1
-		self.angle_orient = Label(lframe(), foreground="DarkBlue", background="gray90", anchor=W)
-		self.angle_orient.grid(row=row, column=col, columnspan=2, sticky=EW, padx=1, pady=1)
-
-		# Buttons
-		col += 2
-		b = Button(lframe(), text=_("Orient"),
-				image=Utils.icons["setsquare32"],
-				compound=TOP,
-				command = lambda a=app:a.insertCommand("ORIENT",True),
-				padx = 1,
-				pady = 1)
-		b.grid(row=row, rowspan=3, column=col, sticky=EW)
-		self.addWidget(b)
-		tkExtra.Balloon.set(b, _("Align GCode with the machine markers"))
-
-		# ---
-		row += 1
-		col = 0
-		Label(lframe(), text=_("Offset:")).grid(row=row, column=col, sticky=E)
-
-		col += 1
-		self.xo_orient = Label(lframe(), foreground="DarkBlue", background="gray90", anchor=W)
-		self.xo_orient.grid(row=row, column=col, sticky=EW, padx=1)
-
-		col += 1
-		self.yo_orient = Label(lframe(), foreground="DarkBlue", background="gray90", anchor=W)
-		self.yo_orient.grid(row=row, column=col, sticky=EW, padx=1)
-
-		# ---
-		row += 1
-		col = 0
-		Label(lframe(), text=_("Error:")).grid(row=row, column=col, sticky=E)
-		col += 1
-		self.err_orient = Label(lframe(), foreground="DarkBlue", background="gray90", anchor=W)
-		self.err_orient.grid(row=row, column=col, columnspan=2, sticky=EW, padx=1, pady=1)
-
-		lframe().grid_columnconfigure(1, weight=1)
-		lframe().grid_columnconfigure(2, weight=1)
-
-		#----------------------------------------------------------------
-		self.warn = True
+		self.warn = False
 		self.loadConfig()
 
 	#-----------------------------------------------------------------------
@@ -565,16 +399,16 @@ class ProbeFrame(CNCRibbon.PageFrame):
 		self.probeXdir.set(Utils.getStr("Probe", "x"))
 		self.probeYdir.set(Utils.getStr("Probe", "y"))
 		self.probeZdir.set(Utils.getStr("Probe", "z"))
-		self.diameter.set(Utils.getStr("Probe",  "center"))
-		self.warn = Utils.getBool("Warning", "probe", self.warn)
+		#self.diameter.set(Utils.getStr("Probe",  "center"))
+		#self.warn = Utils.getBool("Warning", "probe", self.warn)
 
 	#-----------------------------------------------------------------------
 	def saveConfig(self):
 		Utils.setFloat("Probe", "x",      self.probeXdir.get())
 		Utils.setFloat("Probe", "y",      self.probeYdir.get())
 		Utils.setFloat("Probe", "z",      self.probeZdir.get())
-		Utils.setFloat("Probe", "center", self.diameter.get())
-		Utils.setBool("Warning","probe",  self.warn)
+		#Utils.setFloat("Probe", "center", self.diameter.get())
+		#Utils.setBool("Warning","probe",  self.warn)
 
 	#-----------------------------------------------------------------------
 	def updateProbe(self):
@@ -680,121 +514,6 @@ class ProbeFrame(CNCRibbon.PageFrame):
 		lines.append("g90")
 		self.app.run(lines=lines)
 
-	#-----------------------------------------------------------------------
-	# Solve the system and update fields
-	#-----------------------------------------------------------------------
-	def orientSolve(self, event=None):
-		try:
-			phi, xo, yo = self.app.gcode.orient.solve()
-			self.angle_orient["text"]="%*f"%(CNC.digits, math.degrees(phi))
-			self.xo_orient["text"]="%*f"%(CNC.digits, xo)
-			self.yo_orient["text"]="%*f"%(CNC.digits, yo)
-
-			minerr, meanerr, maxerr = self.app.gcode.orient.error()
-			self.err_orient["text"] = "Avg:%*f  Max:%*f  Min:%*f"%\
-				(CNC.digits, meanerr, CNC.digits, maxerr, CNC.digits, minerr)
-
-		except:
-			self.angle_orient["text"] = sys.exc_info()[1]
-			self.xo_orient["text"]    = ""
-			self.yo_orient["text"]    = ""
-			self.err_orient["text"]   = ""
-
-	#-----------------------------------------------------------------------
-	# Delete current orientation point
-	#-----------------------------------------------------------------------
-	def orientDelete(self, event=None):
-		marker = self.scale_orient.get()-1
-		if marker<0 or marker >= len(self.app.gcode.orient): return
-		self.app.gcode.orient.clear(marker)
-		self.orientUpdateScale()
-		self.changeMarker(marker+1)
-		self.orientSolve()
-		self.event_generate("<<DrawOrient>>")
-
-	#-----------------------------------------------------------------------
-	# Clear all markers
-	#-----------------------------------------------------------------------
-	def orientClear(self, event=None):
-		if self.scale_orient.cget("to") == 0: return
-		ans = tkMessageBox.askquestion(_("Delete all markers"),
-			_("Do you want to delete all orientation markers?"),
-			parent=self.winfo_toplevel())
-		if ans!=tkMessageBox.YES: return
-		self.app.gcode.orient.clear()
-		self.orientUpdateScale()
-		self.event_generate("<<DrawOrient>>")
-
-	#-----------------------------------------------------------------------
-	# Update orientation scale
-	#-----------------------------------------------------------------------
-	def orientUpdateScale(self):
-		n = len(self.app.gcode.orient)
-		if n:
-			self.scale_orient.config(state=NORMAL, from_=1, to_=n)
-		else:
-			self.scale_orient.config(state=DISABLED, from_=0, to_=0)
-
-	#-----------------------------------------------------------------------
-	def orientClearFields(self):
-		self.x_orient.delete(0,END)
-		self.y_orient.delete(0,END)
-		self.xm_orient.delete(0,END)
-		self.ym_orient.delete(0,END)
-		self.angle_orient["text"] = ""
-		self.xo_orient["text"]    = ""
-		self.yo_orient["text"]    = ""
-		self.err_orient["text"]   = ""
-
-	#-----------------------------------------------------------------------
-	# Update orient with the current marker
-	#-----------------------------------------------------------------------
-	def orientUpdate(self, event=None):
-		marker = self.scale_orient.get()-1
-		if marker<0 or marker >= len(self.app.gcode.orient):
-			self.orientClearFields()
-			return
-		xm,ym,x,y = self.app.gcode.orient[marker]
-		try:    x = float(self.x_orient.get())
-		except: pass
-		try:    y = float(self.y_orient.get())
-		except: pass
-		try:    xm = float(self.xm_orient.get())
-		except: pass
-		try:    ym = float(self.ym_orient.get())
-		except: pass
-		self.app.gcode.orient.markers[marker] = xm,ym,x,y
-
-		self.orientUpdateScale()
-		self.changeMarker(marker+1)
-		self.orientSolve()
-		self.event_generate("<<DrawOrient>>")
-
-	#-----------------------------------------------------------------------
-	# The index will be +1 to appear more human starting from 1
-	#-----------------------------------------------------------------------
-	def changeMarker(self, marker):
-		marker = int(marker)-1
-		if marker<0 or marker >= len(self.app.gcode.orient):
-			self.orientClearFields()
-			self.event_generate("<<OrientChange>>", data=-1)
-			return
-
-		xm,ym,x,y = self.app.gcode.orient[marker]
-		d = CNC.digits
-		self.x_orient.set("%*f"%(d,x))
-		self.y_orient.set("%*f"%(d,y))
-		self.xm_orient.set("%*f"%(d,xm))
-		self.ym_orient.set("%*f"%(d,ym))
-		self.orientSolve()
-		self.event_generate("<<OrientChange>>", data=marker)
-
-	#-----------------------------------------------------------------------
-	# Select marker
-	#-----------------------------------------------------------------------
-	def selectMarker(self, marker):
-		self.orientUpdateScale()
-		self.scale_orient.set(marker+1)
 
 #===============================================================================
 # Autolevel Frame
@@ -1348,52 +1067,6 @@ class CameraFrame(CNCRibbon.PageFrame):
 		self.event_generate("<<Status>>", data=_("Camera offset is updated"))
 		self.updateValues()
 
-#	#-----------------------------------------------------------------------
-#	def findScale(self):
-#		return
-#		self.app.canvas.cameraMakeTemplate(30)
-#
-#		self.app.control.moveXup()
-#		#self.app.wait4Idle()
-#		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# right
-#
-#		self.app.control.moveXdown()
-#		self.app.control.moveXdown()
-#		#self.app.wait4Idle()
-#		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# left
-#
-#		self.app.control.moveXup()
-#		self.app.control.moveYup()
-#		#self.app.wait4Idle()
-#		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# top
-#
-#		self.app.control.moveYdown()
-#		self.app.control.moveYdown()
-#		#self.app.wait4Idle()
-#		time.sleep(2)
-#		dx,dy = self.app.canvas.cameraMatchTemplate()	# down
-#
-#		self.app.control.moveYup()
-
-	#-----------------------------------------------------------------------
-	# Move camera to spindle location and change coordinates to relative
-	# to camera via g92
-	#-----------------------------------------------------------------------
-#	def switch2Camera(self, event=None):
-#		print "Switch to camera"
-#		wx = CNC.vars["wx"]
-#		wy = CNC.vars["wy"]
-#		dx = float(self.dx.get())
-#		dy = float(self.dy.get())
-#		if self.switchVar.get():
-#			self.sendGCode("G92X%gY%g"%(dx+wx,dy+wy))
-#		else:
-#			self.sendGCode("G92.1")
-#		self.sendGCode("G0X%gY%g"%(wx,wy))
-
 #===============================================================================
 # Tool Group
 #===============================================================================
@@ -1566,8 +1239,8 @@ class ToolFrame(CNCRibbon.PageFrame):
 
 	#-----------------------------------------------------------------------
 	def saveConfig(self):
-		Utils.setInt(  "Probe", "toolpolicy",  TOOL_POLICY.index(self.toolPolicy.get().encode("utf8")))
-		Utils.setInt(  "Probe", "toolwait",    TOOL_WAIT.index(self.toolWait.get().encode("utf8")))
+		#Utils.setInt(  "Probe", "toolpolicy",  TOOL_POLICY.index(self.toolPolicy.get().encode("utf8")))
+		#Utils.setInt(  "Probe", "toolwait",    TOOL_WAIT.index(self.toolWait.get().encode("utf8")))
 		Utils.setFloat("Probe", "toolchangex", self.changeX.get())
 		Utils.setFloat("Probe", "toolchangey", self.changeY.get())
 		Utils.setFloat("Probe", "toolchangez", self.changeZ.get())
@@ -1714,25 +1387,6 @@ class ToolFrame(CNCRibbon.PageFrame):
 		if self.check4Errors(): return
 		lines = self.app.cnc.toolChange(0)
 		self.app.run(lines=lines)
-
-##===============================================================================
-## Help Frame
-##===============================================================================
-#class HelpFrame(CNCRibbon.PageFrame):
-#	def __init__(self, master, app):
-#		CNCRibbon.PageFrame.__init__(self, master, "Help", app)
-#
-#		lframe = tkExtra.ExLabelFrame(self, text="Help", foreground="DarkBlue")
-#		lframe.pack(side=TOP, fill=X)
-#		frame = lframe.frame
-#
-#		self.text = Label(frame,
-#				text="One\nTwo\nThree",
-#				image=Utils.icons["gear32"],
-#				compound=TOP,
-#				anchor=W,
-#				justify=LEFT)
-#		self.text.pack(fill=BOTH, expand=YES)
 
 #===============================================================================
 # Probe Page

@@ -182,28 +182,14 @@ class Application(Toplevel,Sender):
               "(move,inkscape, round...) [Space or Ctrl-Space]"))
         self.widgets.append(self.command)
 
-#        # --- Right side ---
-#        frame = Frame(self.paned)
-#        self.paned.add(frame)
-
-#        # --- Canvas ---
-#        self.canvasFrame = CNCCanvas.CanvasFrame(frame, self)
-#        self.canvasFrame.pack(side=TOP, fill=BOTH, expand=YES)
-#        #self.paned.add(self.canvasFrame)
-## XXX FIXME do I need the self.canvas?
-#        self.canvas = self.canvasFrame.canvas
-
         #region --- Right side ---
         frame = Frame(self.paned)
         self.paned.add(frame)
 
-        
         #tagFileName = self.pfont.TemplateCombo.get()
         self.localtags = Fixture('96A.xml')
         self.itemstoEngrave = []
 
-        #s = ttk.Style()
-        #s.configure('TNotebook', tabposition='w', textrotation = s)
         self.notebook = ttk.Notebook(frame)
 
         #region TabTextEntry
@@ -300,9 +286,6 @@ class Application(Toplevel,Sender):
         self.ribbon.changePage(Utils.getStr(Utils.__prg__,"page", "File"))
 
         probe = Page.frames["Probe:Probe"]
-        tkExtra.bindEventData(self, "<<OrientSelect>>", lambda e,f=probe: f.selectMarker(int(e.data)))
-        tkExtra.bindEventData(self, '<<OrientChange>>',	lambda e,s=self: s.canvas.orientChange(int(e.data)))
-        self.bind('<<OrientUpdate>>',	probe.orientUpdate)
 
         # Global bindings
         self.bind('<<Undo>>',		self.undo)
@@ -1826,12 +1809,6 @@ class Application(Toplevel,Sender):
         self.notBusy()
 #		self.setStatus(_("Pocket block distance=%g")%(ofs*sign))
 
-#	#-----------------------------------------------------------------------
-#	def tabAdded(self, event=None):
-#		tools = Page.frames["Tools"]
-#		tools.populate()
-#		tools.selectTab(-1)
-
     #-----------------------------------------------------------------------
     def edit(self, event=None):
         page = self.ribbon.getActivePage()
@@ -2470,8 +2447,6 @@ class Application(Toplevel,Sender):
 
         #clear out any old tag information
         self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
-        
-        #get probe offset by probing tool.
 
         try:
             import ttf
@@ -2585,6 +2560,9 @@ class Application(Toplevel,Sender):
             self.gcode.insBlocks(index, blocks, "Text")
             self.refresh()
 
+        #get probe offset by probing tool.
+
+
         #Remember to close Font
         font.close()
         self.notebook.select(1)
@@ -2621,7 +2599,6 @@ class Application(Toplevel,Sender):
         Utils.setStr("Engraving", 'depth', self.engrave.depth.get())
         Utils.setStr("Engraving", 'clearance', self.engrave.clearanceZ.get())
         Utils.setStr("Engraving", 'retract', self.engrave.retractZ.get())
-        #TODO clearance height
 
 def usage(rc):
     sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, __version__, __date__))

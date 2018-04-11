@@ -492,54 +492,54 @@ class TabRibbonFrame(Frame):
 		frame = Frame(self, background=_BACKGROUND_DISABLE)
 		frame.pack(side=TOP, fill=X)
 
-		# --- Basic buttons ---
-		b = LabelButton(frame, self, "<<New>>",
-				image=Utils.icons["new"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("New file"))
-		b.pack(side=LEFT)
+		## --- Basic buttons ---
+		#b = LabelButton(frame, self, "<<New>>",
+		#		image=Utils.icons["new"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("New file"))
+		#b.pack(side=LEFT)
 
-		b = LabelButton(frame, self, "<<Open>>",
-				image=Utils.icons["load"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("Open file [Ctrl-O]"))
-		b.pack(side=LEFT)
+		#b = LabelButton(frame, self, "<<Open>>",
+		#		image=Utils.icons["load"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("Open file [Ctrl-O]"))
+		#b.pack(side=LEFT)
 
-		b = LabelButton(frame, self, "<<Save>>",
-				image=Utils.icons["save"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("Save all [Ctrl-S]"))
-		b.pack(side=LEFT)
+		#b = LabelButton(frame, self, "<<Save>>",
+		#		image=Utils.icons["save"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("Save all [Ctrl-S]"))
+		#b.pack(side=LEFT)
 
-		b = LabelButton(frame, self, "<<Undo>>",
-				image=Utils.icons["undo"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("Undo [Ctrl-Z]"))
-		b.pack(side=LEFT)
-		self.tool["undo"] = b
+		#b = LabelButton(frame, self, "<<Undo>>",
+		#		image=Utils.icons["undo"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("Undo [Ctrl-Z]"))
+		#b.pack(side=LEFT)
+		#self.tool["undo"] = b
 
-		b = LabelButton(frame, image=Utils.icons["triangle_down"],
-				command=self.undolist,
-				background=_BACKGROUND_DISABLE)
-		b.pack(side=LEFT)
-		self.tool["undolist"] = b
+		#b = LabelButton(frame, image=Utils.icons["triangle_down"],
+		#		command=self.undolist,
+		#		background=_BACKGROUND_DISABLE)
+		#b.pack(side=LEFT)
+		#self.tool["undolist"] = b
 
-		b = LabelButton(frame, self, "<<Redo>>",
-				image=Utils.icons["redo"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("Redo [Ctrl-Y]"))
-		b.pack(side=LEFT)
-		self.tool["redo"] = b
+		#b = LabelButton(frame, self, "<<Redo>>",
+		#		image=Utils.icons["redo"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("Redo [Ctrl-Y]"))
+		#b.pack(side=LEFT)
+		#self.tool["redo"] = b
 
-		Label(frame, image=Utils.icons["sep"],
-				background=_BACKGROUND_DISABLE).pack(side=LEFT, padx=3)
+		#Label(frame, image=Utils.icons["sep"],
+		#		background=_BACKGROUND_DISABLE).pack(side=LEFT, padx=3)
 
-		# --- Help ---
-		b = LabelButton(frame, self, "<<Help>>",
-				image=Utils.icons["info"],
-				background=_BACKGROUND_DISABLE)
-		tkExtra.Balloon.set(b, _("Help [F1]"))
-		b.pack(side=RIGHT, padx=2)
+		## --- Help ---
+		#b = LabelButton(frame, self, "<<Help>>",
+		#		image=Utils.icons["info"],
+		#		background=_BACKGROUND_DISABLE)
+		#tkExtra.Balloon.set(b, _("Help [F1]"))
+		#b.pack(side=RIGHT, padx=2)
 
 		Label(frame, image=Utils.icons["sep"],
 				background=_BACKGROUND_DISABLE).pack(side=RIGHT, padx=3)
