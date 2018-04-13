@@ -254,6 +254,22 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 		ProbeCommonFrame.probeCmd.fill(PROBE_CMD)
 		self.addWidget(ProbeCommonFrame.probeCmd)
 
+        # ---
+		# Canned Probe command
+		row += 1
+		col  = 0
+		Label(frame, text=_("Probe the Tool")).grid(row=row, column=col, sticky=E)
+		col += 1
+		ProbeCommonFrame.probeNow = Ribbon.LabelButton(frame,
+                text=_("Probe!"),
+                image=Utils.icons["probe32"],
+                compound=TOP,
+                anchor=W,
+                command = app.probeTool,
+                background=Ribbon._BACKGROUND)
+		ProbeCommonFrame.probeNow.grid(row=row, column=col, sticky=EW)
+		self.addWidget(ProbeCommonFrame.probeNow)
+
 		frame.grid_columnconfigure(1,weight=1)
 		self.loadConfig()
 
@@ -305,6 +321,7 @@ class ProbeCommonFrame(CNCRibbon.PageFrame):
 			if p.split()[0] == cmd:
 				ProbeCommonFrame.probeCmd.set(p)
 				break
+
 
 #===============================================================================
 # Probe Frame

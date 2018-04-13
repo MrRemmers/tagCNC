@@ -193,7 +193,9 @@
     <Content Include="tagCNC.ico" />
     <Content Include="tagCNC.ini" />
     <Content Include="tagCNC.png" />
+    <Content Include="template\1078A.xml" />
     <Content Include="template\50A.xml" />
+    <Content Include="template\96A.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.py" />
@@ -221,6 +223,14 @@
     <Compile Include="lib\undo.py" />
     <Compile Include="lib\Unicode.py" />
     <Compile Include="Pendant.py" />
+    <Compile Include="plugins\gear.py" />
+    <Compile Include="plugins\halftone.py" />
+    <Compile Include="plugins\heightmap.py" />
+    <Compile Include="plugins\hilbert.py" />
+    <Compile Include="plugins\jigsaw.py" />
+    <Compile Include="plugins\midi2cnc.py" />
+    <Compile Include="plugins\pyrograph.py" />
+    <Compile Include="plugins\sketch.py" />
     <Compile Include="plugins\text.py" />
     <Compile Include="ProbePage.py" />
     <Compile Include="Ribbon.py" />

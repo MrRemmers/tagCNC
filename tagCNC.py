@@ -6,8 +6,8 @@
 # Date: 24-Aug-2014
 
 __version__ = "0.9.12"
-__date__    = "23 Nov 2017"
-__author__  = "Vasilis Vlachoudis"
+__date__    = "11 April 2018"
+__author__  = "Richard Remmers"
 __email__   = "vvlachoudis@gmail.com"
 
 import os
@@ -186,8 +186,8 @@ class Application(Toplevel,Sender):
         frame = Frame(self.paned)
         self.paned.add(frame)
 
-        #tagFileName = self.pfont.TemplateCombo.get()
-        self.localtags = Fixture('96A.xml')
+        tagFileName = Utils.getStr("Text", 'selectedtemplate')
+        self.localtags = Fixture(tagFileName)
         self.itemstoEngrave = []
 
         self.notebook = ttk.Notebook(frame)
@@ -2434,6 +2434,34 @@ class Application(Toplevel,Sender):
     def set(self, section, item, value):
         return Utils.config.set(section, item, value)
 #------------------------------------------------------------------------------
+    def probeTool(self):
+        #probe the tool 
+        #clearanceZ = float(self.engrave.clearanceZ.get())
+        #CNC.vars["safe"] = clearanceZ
+
+        #get probe offset by probing tool.
+        ProbeXLocation = Utils.getFloat("Probe", "x", -10)
+        ProbeYLocation = Utils.getFloat("Probe", "y", -25)
+        ProbeZoffsetLocation = Utils.getFloat("Probe", "tlo", 20.711)
+        ProbeFastSpeed = Utils.getFloat("Probe", "fastfeed", 100)
+        ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
+
+        try:
+            lines = []
+            lines.append("$H")
+            lines.append("G53 G0 X%s Y%s Z%s" %(ProbeXLocation, ProbeYLocation, -2))
+            lines.append("%wait")
+            lines.append("G38.2 Z-20 F%s" %(ProbeFastSpeed))
+            lines.append("%wait")
+            #z[toolprobez]
+            #set the G54 for positive space with the tip of the tool a the top of the table
+            lines.append("G10L20P0X%sY%sZ%s \n" %(self.localtags.origin['X'], self.localtags.origin['Y'], ProbeZoffsetLocation))
+            ## Adjust the current WCS to fit to the tool
+            lines.append("G53 G0Z-2")
+            #self.sendGCode(lines)
+            self.run(lines = lines)
+        except:
+            pass
 
     def drawText(self):
         fontPath = os.path.join(Utils.prgpath, 'fonts')
@@ -2444,6 +2472,8 @@ class Application(Toplevel,Sender):
         depth = -float(self.engrave.depth.get())
         retractZ = float(self.engrave.retractZ.get())
         clearanceZ = float(self.engrave.clearanceZ.get())
+        CNC.vars["safe"] = clearanceZ
+        
 
         #clear out any old tag information
         self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
@@ -2560,9 +2590,6 @@ class Application(Toplevel,Sender):
             self.gcode.insBlocks(index, blocks, "Text")
             self.refresh()
 
-        #get probe offset by probing tool.
-
-
         #Remember to close Font
         font.close()
         self.notebook.select(1)
@@ -2587,9 +2614,13 @@ class Application(Toplevel,Sender):
 
     def initializeGcodeforText(self, originX, originY, originZ):
         #custom header just for tags
-        headGcode = "$H \n $G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
+        #headGcode = "$H \n $G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
         # $H = means home the machine.  $G means View gcode parser state
         #headGcode = "$G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
+
+        #G10 L2 move a coordinate system relative to G53
+        # P1 equals G54.
+        headGcode = "$H \n $G \n G10L2P1X%sY%s \n G0X%s \n M3 \n S12000" %(-originX, -originY, (originX/2))
         self.gcode.header = headGcode
         #clear out any old tag information
         self.newFile(prompt = FALSE)

@@ -84,22 +84,24 @@ class FontFrame(CNCRibbon.PageLabelFrame):
         #wordspacing = IntVar()
         self.templateFile = StringVar()
 
-        tagPath = os.path.join(Utils.prgpath, 'template')
+        #tagPath = os.path.join(Utils.prgpath, 'template')
+
+        #col,row=0,0
+        #b = Label(self, text=_("Template:"))
+        #b.grid(row=row,column=col,sticky=E)
+        #self.addWidget(b)
+
+        #templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
+        #self.TemplateCombo = ttk.Combobox(self, width=16, textvariable=self.templateFile, values = templatefiles)
+        #self.TemplateCombo.grid(row=row, column=col+1, sticky=EW)
+        #tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
+        #self.TemplateCombo.set(Utils.getStr("Text", 'selectedtemplate'))
+
+        ## ---
+        #row += 1
+        #col = 0
 
         col,row=0,0
-        b = Label(self, text=_("Template:"))
-        b.grid(row=row,column=col,sticky=E)
-        self.addWidget(b)
-
-        templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
-        self.TemplateCombo = ttk.Combobox(self, width=16, textvariable=self.templateFile, values = templatefiles)
-        self.TemplateCombo.grid(row=row, column=col+1, sticky=EW)
-        tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
-        self.TemplateCombo.set(Utils.getStr("Text", 'selectedtemplate'))
-
-        # ---
-        row += 1
-        col = 0
         b = Label(self, text=_("Font:"))
         b.grid(row=row,column=col,sticky=E)
         self.addWidget(b)
