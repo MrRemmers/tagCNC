@@ -2442,26 +2442,58 @@ class Application(Toplevel,Sender):
         #get probe offset by probing tool.
         ProbeXLocation = Utils.getFloat("Probe", "x", -10)
         ProbeYLocation = Utils.getFloat("Probe", "y", -25)
-        ProbeZoffsetLocation = Utils.getFloat("Probe", "tlo", 20.711)
+        ProbeZoffsetLocation = Utils.getFloat("Machine", "zprobe", 20.711)
         ProbeFastSpeed = Utils.getFloat("Probe", "fastfeed", 100)
         ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
 
         try:
+            self.sendGCode("$X")
             lines = []
             lines.append("$H")
             lines.append("G53 G0 X%s Y%s Z%s" %(ProbeXLocation, ProbeYLocation, -2))
             lines.append("%wait")
-            lines.append("G38.2 Z-20 F%s" %(ProbeFastSpeed))
+            lines.append("G91 G38.2 Z-20 F%s" %(ProbeFastSpeed))
             lines.append("%wait")
             #z[toolprobez]
             #set the G54 for positive space with the tip of the tool a the top of the table
-            lines.append("G10L20P0X%sY%sZ%s \n" %(self.localtags.origin['X'], self.localtags.origin['Y'], ProbeZoffsetLocation))
+            lines.append("G90 G10L20P0Z%s" %(ProbeZoffsetLocation))
             ## Adjust the current WCS to fit to the tool
             lines.append("G53 G0Z-2")
             #self.sendGCode(lines)
             self.run(lines = lines)
         except:
             pass
+
+    def testTagprobe(self):
+        originX = Utils.getFloat("Machine", 'xmax')
+        originY = Utils.getFloat("Machine", 'ymax')
+        ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
+        self.initHeader(originX, originY, self.localtags.origin['Z'])
+
+        t = self.localtags.tag[0]
+        tagMidY = abs(t['y1']-t['y0'])/2 + t['y0']
+        tagMidX = abs(t['x1']-t['x0'])/2 + t['x0']
+        blocks = []
+        block = Block("Probe Tag")
+        block.append(("G0X%sY%s" %(tagMidX, tagMidY)))
+        block.append(CNC.zenter(1))
+        block.append("%wait")
+        #probe
+        block.append("G91 G38.2 Z-2 F%s" %(ProbeSpeed))
+        block.append("%wait")
+        block.append("G10L20P0Z0")
+        block.append("%wait")
+        block.append(CNC.zexit(1))
+        block.append("G54")
+
+        blocks.append(block)
+        if (len(self.gcode.blocks) == 0):
+            index = 1 
+        else:
+            index = len(self.gcode.blocks)-1
+        self.gcode.insBlocks(index, blocks, "Text")
+        self.refresh()
+        self.sendGCode("$X")
 
     def drawText(self):
         fontPath = os.path.join(Utils.prgpath, 'fonts')
@@ -2471,12 +2503,167 @@ class Application(Toplevel,Sender):
             return
         depth = -float(self.engrave.depth.get())
         retractZ = float(self.engrave.retractZ.get())
+        CNC.vars["safe"] = retractZ
         clearanceZ = float(self.engrave.clearanceZ.get())
-        CNC.vars["safe"] = clearanceZ
+        ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
         
-
         #clear out any old tag information
-        self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
+        #self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
+        originX = Utils.getFloat("Machine", 'xmax')
+        originY = Utils.getFloat("Machine", 'ymax')
+        self.initHeader(originX, originY, self.localtags.origin['Z'])
+
+        try:
+            import ttf
+            font = ttf.TruetypeInfo(fontFileName)
+        except:
+            self.setStatus(_("Text abort: That embarrassing, I can't read this font file!"))
+            return
+        
+        for plate in self.itemstoEngrave:
+            
+            t = self.localtags.tag[plate.numTag]
+            ##Get inputs
+            tagHeight = abs(t['y1']-t['y0'])
+            tagWidth = abs(t['x1']-t['x0'])
+            tagMidY = abs(t['y1']-t['y0'])/2 + t['y0']
+            tagMidX = abs(t['x1']-t['x0'])/2 + t['x0']
+            textToWrite   = plate.text.get()
+
+            #charsWidth    = self["CharsWidth"]
+            #charsWidth     = int(self.font.charspacing.get())
+
+            #Check parameters!!!
+            if textToWrite == "":
+                textToWrite = "Nel mezzo del cammin di nostra vita..."
+                continue
+
+            #Init blocks
+            blocks = []
+            n = textToWrite
+            
+            if not n or n == "default": n = "Text"
+            block = Block(n)
+            probeBlock = Block("Probe" +n)
+            if(u'\n' in  textToWrite):
+                block.append("(Text:)")
+                for line in textToWrite.splitlines():
+                    block.append("(%s)" % line)
+            else:
+                block.append("(Text: %s)" % textToWrite)
+
+            probeBlock.append(("G0X%sY%s" %(tagMidX, tagMidY)))
+            probeBlock.append(CNC.zenter(retractZ))
+            probeBlock.append("%wait")
+            #probe
+            probeBlock.append("G91 G38.2 Z-3 F%s" %(ProbeSpeed))
+            probeBlock.append("%wait")
+            probeBlock.append("G10L20P0Z0")
+            probeBlock.append("%wait")
+            block.append("G54")
+            block.append("G90")
+            probeBlock.append(CNC.zexit(retractZ))
+
+            cmap = font.get_character_map()
+            kern = None
+            try:
+                kern = font.get_glyph_kernings()
+            except:
+                pass
+            adv = font.get_glyph_advances()
+
+            #xOffset = 0
+            #yOffset = 0
+            dx= float(t['x0'])
+            dy= float(t['y0'])
+            #If there are only a few characters, 
+            #the fontsize being the height of the tag works
+            #however, longer tags need to be resized
+            glyphLength = 0
+            for c in textToWrite:
+                if c == u'\n':
+                    xOffset = 0.0
+                    yOffset -= 1#offset for new line
+                    continue
+                if c in cmap:
+                    glyphIndx = cmap[c]
+                glyphLength += adv[glyphIndx]
+
+            fontSize = 0
+            if (glyphLength*tagHeight )> tagWidth:
+                fontSize = tagWidth/glyphLength
+            else:
+                fontSize = tagHeight
+            #offset the height difference
+            dy = dy + (tagHeight-fontSize)/2
+            #offset to center the text
+            dx = dx + (tagWidth - glyphLength*fontSize)/2
+
+            glyphIndxLast = cmap[' ']
+            xOffset = dx/fontSize
+            yOffset = dy/fontSize
+            #create the characters
+            for c in textToWrite:
+	            #New line
+                if c == u'\n':
+                    xOffset = 0.0
+                    yOffset -= 1#offset for new line
+                    continue
+
+                if c in cmap:
+                    glyphIndx = cmap[c]
+
+                    if (kern and (glyphIndx,glyphIndxLast) in kern):
+                        k = kern[(glyphIndx,glyphIndxLast)] #FIXME: use kern for offset??
+
+	                #Get glyph contours as line segmentes and draw them
+                    gc = font.get_glyph_contours(glyphIndx)
+                    if(not gc):
+                        gc = font.get_glyph_contours(0)#standard glyph for missing glyphs (complex glyph)
+                    if(gc and not c==' '): #FIXME: for some reason space is not mapped correctly!!!
+                        self.writeGlyphContour(block, font, gc, fontSize, depth, xOffset, yOffset, retractZ)
+                    if glyphIndx < len(adv):
+                        xOffset += adv[glyphIndx]
+                    else:
+                        xOffset += 1
+                    glyphIndxLast = glyphIndx
+            #Gcode Zsafe
+            block.append(CNC.zexit(clearanceZ))
+
+            #self.gcode.moveLines(block.path, dx, dy)
+            blocks.append(probeBlock)
+            blocks.append(block)
+            #active = self.activeBlock()
+            #if active==0: active=1
+            if (len(self.gcode.blocks) == 0):
+                index = 1 
+            else:
+                index = len(self.gcode.blocks)-1
+            self.gcode.insBlocks(index, blocks, "Text")
+            self.refresh()
+
+        #Remember to close Font
+        font.close()
+        self.notebook.select(1)
+        self.canvas.fit2Screen()
+        self.refresh()
+
+    def drawText_old(self):
+        fontPath = os.path.join(Utils.prgpath, 'fonts')
+        fontFileName   = join(fontPath, self.pfont.fontCombo.get())
+        if fontFileName == "":
+            self.setStatus(_("Text abort: please select a font file"))
+            return
+        depth = -float(self.engrave.depth.get())
+        retractZ = float(self.engrave.retractZ.get())
+        CNC.vars["safe"] = retractZ
+        clearanceZ = float(self.engrave.clearanceZ.get())
+        
+        #clear out any old tag information
+        #self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
+        originX = Utils.getFloat("Machine", 'xmax')
+        originY = Utils.getFloat("Machine", 'ymax')
+        self.initializeGcodeforText(originX, originY, self.localtags.origin['Z'])
 
         try:
             import ttf
@@ -2596,7 +2783,7 @@ class Application(Toplevel,Sender):
         self.canvas.fit2Screen()
         self.refresh()
 
-    	#Write GCode from glyph conrtours
+        #Write GCode from glyph conrtours
     def writeGlyphContour(self,block,font,contours,fontSize,depth,xO, yO, retractZ):
         #width = font.header.x_max - font.header.x_min
         #height = font.header.y_max - font.header.y_min
@@ -2625,11 +2812,18 @@ class Application(Toplevel,Sender):
         #clear out any old tag information
         self.newFile(prompt = FALSE)
 
+    def initHeader(self, originX, originY, originZ):
+        # P1 equals G54.
+        headGcode = "$G \n G10L2P1X%sY%s \n G43.1Z%s \n G0X%s M3 S12000" %(-originX, -originY, originZ, (originX/2))
+        self.gcode.header = headGcode
+        #clear out any old tag information
+        self.newFile(prompt = FALSE)
+
     def saveTagConfig(self):
         Utils.setStr("Text", 'selectedfont', self.pfont.fontCombo.get())
-        Utils.setStr("Engraving", 'depth', self.engrave.depth.get())
-        Utils.setStr("Engraving", 'clearance', self.engrave.clearanceZ.get())
-        Utils.setStr("Engraving", 'retract', self.engrave.retractZ.get())
+        Utils.setFloat("Engraving", 'depth', self.engrave.depth.get())
+        Utils.setFloat("Engraving", 'clearance', self.engrave.clearanceZ.get())
+        Utils.setFloat("Engraving", 'retract', self.engrave.retractZ.get())
 
 def usage(rc):
     sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, __version__, __date__))

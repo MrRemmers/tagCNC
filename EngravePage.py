@@ -25,6 +25,7 @@ import Utils
 import Ribbon
 import CNCRibbon
 from CNC import CNC,Block
+import Tag
 
 #===============================================================================
 # Calculate Group
@@ -55,11 +56,23 @@ class CalculateGroup(CNCRibbon.ButtonGroup):
                 compound=TOP,
                 anchor=W,
                 command = app.drawText,
+                #command = Tag.drawText(app),
                 background=Ribbon._BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=10, pady=10, sticky=NSEW)
         tkExtra.Balloon.set(b, _("Calculate G code"))	
         self.addWidget(b)	
 
+        col,row=1,0
+        b = Ribbon.LabelButton(self.frame,
+                text=_("Probe Tag"),
+                image=Utils.icons["probe32"],
+                compound=TOP,
+                anchor=W,
+                command = app.testTagprobe,
+                background=Ribbon._BACKGROUND)
+        b.grid(row=row, column=col, rowspan=3, padx=10, pady=10, sticky=NSEW)
+        tkExtra.Balloon.set(b, _("Probe Tag"))	
+        self.addWidget(b)
         #col,row=1,0
         #b = Ribbon.LabelButton(self.frame,
         #        text=_("Engrave"),
@@ -117,6 +130,10 @@ class FontFrame(CNCRibbon.PageLabelFrame):
         self.fontCombo.set(Utils.getStr("Text", 'selectedfont'))
         self.addWidget(self.fontCombo)
 
+    #def saveConfig(self):
+    #    Utils.setStr("Text", 'selectedfont', self.fontCombo.get())
+    #    #return super(FontFrame, self).saveConfig()
+
         # ---
         #row += 1
         #col = 0
@@ -149,13 +166,15 @@ class FontFrame(CNCRibbon.PageLabelFrame):
 # Engraving Frame
 #===============================================================================
 class EngravingFrame(CNCRibbon.PageLabelFrame):
+    #clearanceZ = DoubleVar()
+    #retractZ = DoubleVar()
+    #depth = DoubleVar()
+
     def __init__(self, master, app):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Engraving", app)
-
         self.clearanceZ = DoubleVar()
         self.retractZ = DoubleVar()
         self.depth = DoubleVar()
-        
         # populate gstate dictionary
         self.gstate = {}	# $G state results widget dictionary
         #for k,v in DISTANCE_MODE.items():
@@ -209,7 +228,7 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.clearanceZentry = tkExtra.FloatEntry(self, background="White", width=10, textvariable=self.clearanceZ)
         self.clearanceZentry.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.clearanceZentry, _("Height above tag between letters"))
-        self.clearanceZentry.set(Utils.getStr("Engraving", 'clearanceZ'))
+        self.clearanceZentry.set(Utils.getFloat("Engraving", 'clearance'))
         self.addWidget(self.clearanceZentry)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
@@ -228,7 +247,7 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.retractZentry = tkExtra.FloatEntry(self, background="White", width=5, textvariable=self.retractZ)
         self.retractZentry.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.retractZentry, _("Height above between Tags"))
-        self.retractZentry.set(Utils.getStr("Engraving", 'retractZ'))
+        self.retractZentry.set(Utils.getFloat("Engraving", 'retract'))
         self.addWidget(self.retractZentry)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
@@ -247,13 +266,18 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.depth = tkExtra.FloatEntry(self, background="White", width=5, textvariable=self.depth)
         self.depth.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.depth, _("How Far to carve into piece"))
-        self.depth.set(Utils.getStr("Engraving", 'depth'))
+        self.depth.set(Utils.getFloat("Engraving", 'depth'))
         self.addWidget(self.depth)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
         b = Label(self, text=_("mm"))
         b.grid(row=row,column=col+1,sticky=E)
         self.addWidget(b)
+
+    #def saveConfig(self):
+    #    Utils.setStr("Engraving", 'depth', self.depth.get())
+    #    Utils.setStr("Engraving", 'clearance', self.clearanceZ.get())
+    #    Utils.setStr("Engraving", 'retract', self.retractZ.get())
 
 #===============================================================================
 # Tool Frame

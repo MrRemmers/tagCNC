@@ -987,7 +987,7 @@ class CNC:
 		if CNC.lasercutter:
 			return "m5"
 		else:
-			return "g0 %s"%(CNC.fmt("z",z))
+			return "G0 %s"%(CNC.fmt("Z",z))
 
 	#----------------------------------------------------------------------
 	# gcode to go to z-safe
