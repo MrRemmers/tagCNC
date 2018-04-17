@@ -21,6 +21,7 @@ import getopt
 import socket
 import traceback
 from datetime import datetime
+import random
 
 try:
     import serial
@@ -185,14 +186,12 @@ class Application(Toplevel,Sender):
         #region --- Right side ---
         frame = Frame(self.paned)
         self.paned.add(frame)
-
-        tagFileName = Utils.getStr("Text", 'selectedtemplate')
-        self.localtags = Fixture(tagFileName)
-        self.itemstoEngrave = []
-
         self.notebook = ttk.Notebook(frame)
 
         #region TabTextEntry
+        tagFileName = Utils.getStr("Text", 'selectedtemplate')
+        self.localtags = Fixture(tagFileName)
+        self.itemstoEngrave = []
         tabTextEntry = Frame(self.notebook)
         i=0
         self.origin = {}
@@ -2170,6 +2169,7 @@ class Application(Toplevel,Sender):
             #		_("Please ZERO any location of the probe before starting a run"),
             #		parent=self)
             #	return
+
             self.statusbar.setLimits(0, 9999)
             self.statusbar.setProgress(0,0)
 
@@ -2434,17 +2434,23 @@ class Application(Toplevel,Sender):
     def set(self, section, item, value):
         return Utils.config.set(section, item, value)
 #------------------------------------------------------------------------------
-    def probeTool(self):
-        #probe the tool 
-        #clearanceZ = float(self.engrave.clearanceZ.get())
-        #CNC.vars["safe"] = clearanceZ
+    def changeTemplate(self):
+        ans = tkMessageBox.askquestion(_("Change Template"),
+                _("So you want to change the template... Well Rick is lazy so you'll need to restart the program, OKAY?"),
+                type = tkMessageBox.YESNOCANCEL,
+                parent=self)
+        if ans==tkMessageBox.CANCEL:
+            return True
+        if ans==tkMessageBox.YES or ans==True:
+            self.quit()
 
+    def probeTool(self):
         #get probe offset by probing tool.
-        ProbeXLocation = Utils.getFloat("Probe", "x", -10)
-        ProbeYLocation = Utils.getFloat("Probe", "y", -25)
+        ProbeXLocation = Utils.getFloat("Probe", "x", -10) + (random.random() - random.random())
+        ProbeYLocation = Utils.getFloat("Probe", "y", -25) + (random.random() - random.random())
         ProbeZoffsetLocation = Utils.getFloat("Machine", "zprobe", 20.711)
         ProbeFastSpeed = Utils.getFloat("Probe", "fastfeed", 100)
-        ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
+        #ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
 
         try:
             self.sendGCode("$X")
@@ -2454,12 +2460,10 @@ class Application(Toplevel,Sender):
             lines.append("%wait")
             lines.append("G91 G38.2 Z-20 F%s" %(ProbeFastSpeed))
             lines.append("%wait")
-            #z[toolprobez]
             #set the G54 for positive space with the tip of the tool a the top of the table
             lines.append("G90 G10L20P0Z%s" %(ProbeZoffsetLocation))
             ## Adjust the current WCS to fit to the tool
             lines.append("G53 G0Z-2")
-            #self.sendGCode(lines)
             self.run(lines = lines)
         except:
             pass
@@ -2508,7 +2512,6 @@ class Application(Toplevel,Sender):
         ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
         
         #clear out any old tag information
-        #self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
         originX = Utils.getFloat("Machine", 'xmax')
         originY = Utils.getFloat("Machine", 'ymax')
         self.initHeader(originX, originY, self.localtags.origin['Z'])
@@ -2529,15 +2532,10 @@ class Application(Toplevel,Sender):
             tagMidY = abs(t['y1']-t['y0'])/2 + t['y0']
             tagMidX = abs(t['x1']-t['x0'])/2 + t['x0']
             textToWrite   = plate.text.get()
-
-            #charsWidth    = self["CharsWidth"]
-            #charsWidth     = int(self.font.charspacing.get())
-
             #Check parameters!!!
             if textToWrite == "":
                 textToWrite = "Nel mezzo del cammin di nostra vita..."
                 continue
-
             #Init blocks
             blocks = []
             n = textToWrite
@@ -2571,9 +2569,6 @@ class Application(Toplevel,Sender):
             except:
                 pass
             adv = font.get_glyph_advances()
-
-            #xOffset = 0
-            #yOffset = 0
             dx= float(t['x0'])
             dy= float(t['y0'])
             #If there are only a few characters, 
@@ -2602,31 +2597,37 @@ class Application(Toplevel,Sender):
             glyphIndxLast = cmap[' ']
             xOffset = dx/fontSize
             yOffset = dy/fontSize
-            #create the characters
-            for c in textToWrite:
-	            #New line
-                if c == u'\n':
-                    xOffset = 0.0
-                    yOffset -= 1#offset for new line
-                    continue
 
-                if c in cmap:
-                    glyphIndx = cmap[c]
+            incrementalDepth = depth/2
+            #Loop Twice
+            for x in range(1, 2):
+                zdepth = incrementalDepth*x
+                #create the characters
+                for c in textToWrite:
+	                #New line
+                    if c == u'\n':
+                        xOffset = 0.0
+                        yOffset -= 1#offset for new line
+                        continue
 
-                    if (kern and (glyphIndx,glyphIndxLast) in kern):
-                        k = kern[(glyphIndx,glyphIndxLast)] #FIXME: use kern for offset??
+                    if c in cmap:
+                        glyphIndx = cmap[c]
 
-	                #Get glyph contours as line segmentes and draw them
-                    gc = font.get_glyph_contours(glyphIndx)
-                    if(not gc):
-                        gc = font.get_glyph_contours(0)#standard glyph for missing glyphs (complex glyph)
-                    if(gc and not c==' '): #FIXME: for some reason space is not mapped correctly!!!
-                        self.writeGlyphContour(block, font, gc, fontSize, depth, xOffset, yOffset, retractZ)
-                    if glyphIndx < len(adv):
-                        xOffset += adv[glyphIndx]
-                    else:
-                        xOffset += 1
-                    glyphIndxLast = glyphIndx
+                        if (kern and (glyphIndx,glyphIndxLast) in kern):
+                            k = kern[(glyphIndx,glyphIndxLast)] #FIXME: use kern for offset??
+
+	                    #Get glyph contours as line segmentes and draw them
+                        gc = font.get_glyph_contours(glyphIndx)
+                        if(not gc):
+                            gc = font.get_glyph_contours(0)#standard glyph for missing glyphs (complex glyph)
+                        if(gc and not c==' '): #FIXME: for some reason space is not mapped correctly!!!
+                            self.writeGlyphContour(block, font, gc, fontSize, zdepth, xOffset, yOffset, retractZ)
+                        if glyphIndx < len(adv):
+                            xOffset += adv[glyphIndx]
+                        else:
+                            xOffset += 1
+                        glyphIndxLast = glyphIndx
+
             #Gcode Zsafe
             block.append(CNC.zexit(clearanceZ))
 
@@ -2821,9 +2822,11 @@ class Application(Toplevel,Sender):
 
     def saveTagConfig(self):
         Utils.setStr("Text", 'selectedfont', self.pfont.fontCombo.get())
+        Utils.setStr("Text", 'selectedTemplate', self.pfont.TemplateCombo.get())
         Utils.setFloat("Engraving", 'depth', self.engrave.depth.get())
         Utils.setFloat("Engraving", 'clearance', self.engrave.clearanceZ.get())
         Utils.setFloat("Engraving", 'retract', self.engrave.retractZ.get())
+
 
 def usage(rc):
     sys.stdout.write("%s V%s [%s]\n"%(Utils.__prg__, __version__, __date__))

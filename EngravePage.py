@@ -12,12 +12,14 @@ from os import listdir
 from os.path import isfile, join
 
 try:
-	from Tkinter import *
-	import ttk
-	import ConfigParser
+    from Tkinter import *
+    import ttk
+    import ConfigParser
+    import tkMessageBox
 except ImportError:
-	from tkinter import *
-	import configparser as ConfigParser
+    from tkinter import *
+    import configparser as ConfigParser
+    import tkinter.messagebox as tkMessageBox
 
 import tkExtra
 
@@ -64,14 +66,14 @@ class CalculateGroup(CNCRibbon.ButtonGroup):
 
         col,row=1,0
         b = Ribbon.LabelButton(self.frame,
-                text=_("Probe Tag"),
+                text=_("Probe Tool"),
                 image=Utils.icons["probe32"],
                 compound=TOP,
                 anchor=W,
-                command = app.testTagprobe,
+                command = app.probeTool,
                 background=Ribbon._BACKGROUND)
         b.grid(row=row, column=col, rowspan=3, padx=10, pady=10, sticky=NSEW)
-        tkExtra.Balloon.set(b, _("Probe Tag"))	
+        tkExtra.Balloon.set(b, _("Probe Tool"))	
         self.addWidget(b)
         #col,row=1,0
         #b = Ribbon.LabelButton(self.frame,
@@ -93,28 +95,37 @@ class FontFrame(CNCRibbon.PageLabelFrame):
         CNCRibbon.PageLabelFrame.__init__(self, master, "Font", app)
 
         self.fontfile = StringVar()
-        charspacing = IntVar()
+
+        #charspacing = IntVar()
         #wordspacing = IntVar()
         self.templateFile = StringVar()
-
-        #tagPath = os.path.join(Utils.prgpath, 'template')
-
-        #col,row=0,0
-        #b = Label(self, text=_("Template:"))
-        #b.grid(row=row,column=col,sticky=E)
-        #self.addWidget(b)
-
-        #templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
-        #self.TemplateCombo = ttk.Combobox(self, width=16, textvariable=self.templateFile, values = templatefiles)
-        #self.TemplateCombo.grid(row=row, column=col+1, sticky=EW)
-        #tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
-        #self.TemplateCombo.set(Utils.getStr("Text", 'selectedtemplate'))
-
-        ## ---
-        #row += 1
-        #col = 0
+        tagPath = os.path.join(Utils.prgpath, 'template')
 
         col,row=0,0
+        b = Label(self, text=_("Change Template:"))
+        b.grid(row=row,column=col,sticky=E)
+        self.addWidget(b)
+
+        templatefiles = [f for f in listdir(tagPath) if isfile(join(tagPath, f)) and f.endswith(".xml")]
+        self.TemplateCombo = ttk.Combobox(self, width=16, textvariable=self.templateFile, values = templatefiles)
+        self.TemplateCombo.grid(row=row, column=col+1, sticky=EW)
+        tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
+        self.TemplateCombo.set(Utils.getStr("Text", 'selectedtemplate'))
+        self.addWidget(self.TemplateCombo)
+
+        ## ---
+        row += 1
+        col = 0
+        self.TemplateButton= Button(self, text="Change Template", command= app.changeTemplate)
+        self.TemplateButton.grid(row=row, column=col+1, sticky=EW)
+        tkExtra.Balloon.set(self.TemplateCombo, _("Select Template"))
+        self.addWidget(self.TemplateButton)
+
+        ## ---
+        row += 1
+        col = 0
+
+        #col,row=0,0
         b = Label(self, text=_("Font:"))
         b.grid(row=row,column=col,sticky=E)
         self.addWidget(b)
