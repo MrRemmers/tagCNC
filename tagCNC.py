@@ -1,7 +1,8 @@
 #!/usr/bin/python
-# -*- coding: ascii -*-
+# -*- coding:utf-8 -*-
 # $Id: tagCNC.py,v 1.6 2014/10/15 15:04:48 bnv Exp bnv $
 #
+
 # Author: vvlachoudis@gmail.com
 # Date: 24-Aug-2014
 
@@ -2826,6 +2827,9 @@ class Application(Toplevel,Sender):
         Utils.setFloat("Engraving", 'depth', self.engrave.depth.get())
         Utils.setFloat("Engraving", 'clearance', self.engrave.clearanceZ.get())
         Utils.setFloat("Engraving", 'retract', self.engrave.retractZ.get())
+        Utils.setFloat("Engraving", 'cutrate', self.engrave.feedrateentry.get())
+        Utils.setFloat("Engraving", 'plungerate', self.engrave.plungerateentry.get())
+
 
 
 def usage(rc):

@@ -201,7 +201,8 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.feedrateentry = tkExtra.FloatEntry(self, background="White", width=20)
         self.feedrateentry.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.feedrateentry, _("How Fast Tool moves while cutting"))
-        self.feedrateentry.set(CNC.vars["cutfeed"])
+        #self.feedrateentry.set(CNC.vars["cutfeed"])
+        self.feedrateentry.set(Utils.getFloat("Engraving", 'cutrate'))
         self.addWidget(self.feedrateentry)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
@@ -220,7 +221,8 @@ class EngravingFrame(CNCRibbon.PageLabelFrame):
         self.plungerateentry = tkExtra.FloatEntry(self, background="White", width=20)
         self.plungerateentry.grid(row=row, column=col, sticky=EW)
         tkExtra.Balloon.set(self.plungerateentry, _("How Fast Tool moves when plunging"))
-        self.plungerateentry.set(CNC.vars["cutfeedz"])
+        #self.plungerateentry.set(CNC.vars["cutfeedz"])
+        self.plungerateentry.set(Utils.getFloat("Engraving", 'plungerate'))
         self.addWidget(self.plungerateentry)
         #TODO
         #for k,v in FEED_MODE.items(): self.gstate[k] = (self.feedMode, v)
