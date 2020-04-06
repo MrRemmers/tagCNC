@@ -2435,43 +2435,11 @@ class Application(Toplevel,Sender):
     def set(self, section, item, value):
         return Utils.config.set(section, item, value)
 #------------------------------------------------------------------------------
-    def changeTemplate(self):
-        ans = tkMessageBox.askquestion(_("Change Template"),
-                _("So you want to change the template... Well Rick is lazy so you'll need to restart the program, OKAY?"),
-                type = tkMessageBox.YESNOCANCEL,
-                parent=self)
-        if ans==tkMessageBox.CANCEL:
-            return True
-        if ans==tkMessageBox.YES or ans==True:
-            self.quit()
-
-    def probeTool(self):
-        #get probe offset by probing tool.
-        ProbeXLocation = Utils.getFloat("Probe", "x", -10) + (random.random() - random.random())
-        ProbeYLocation = Utils.getFloat("Probe", "y", -25) + (random.random() - random.random())
-        ProbeZoffsetLocation = Utils.getFloat("Machine", "zprobe", 20.711)
-        ProbeFastSpeed = Utils.getFloat("Probe", "fastfeed", 100)
-        #ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
-
-        try:
-            self.sendGCode("$X")
-            lines = []
-            lines.append("$H")
-            lines.append("G53 G0 X%s Y%s Z%s" %(ProbeXLocation, ProbeYLocation, -2))
-            lines.append("%wait")
-            lines.append("G91 G38.2 Z-20 F%s" %(ProbeFastSpeed))
-            lines.append("%wait")
-            #set the G54 for positive space with the tip of the tool a the top of the table
-            lines.append("G90 G10L20P0Z%s" %(ProbeZoffsetLocation))
-            ## Adjust the current WCS to fit to the tool
-            lines.append("G53 G0Z-2")
-            self.run(lines = lines)
-        except:
-            pass
-
     def testTagprobe(self):
-        originX = Utils.getFloat("Machine", 'xmax')
-        originY = Utils.getFloat("Machine", 'ymax')
+        #originX = Utils.getFloat("Machine", 'xmax')
+        #originY = Utils.getFloat("Machine", 'ymax')
+        originX = self.localtags.origin['X']
+        originY = self.localtags.origin['Y']
         ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
         self.initHeader(originX, originY, self.localtags.origin['Z'])
 
@@ -2500,6 +2468,42 @@ class Application(Toplevel,Sender):
         self.refresh()
         self.sendGCode("$X")
 
+    def changeTemplate(self):
+        ans = tkMessageBox.askquestion(_("Change Template"),
+                _("So you want to change the template... Well Rick is lazy so you'll need to restart the program, OKAY?"),
+                type = tkMessageBox.YESNOCANCEL,
+                parent=self)
+        if ans==tkMessageBox.CANCEL:
+            return True
+        if ans==tkMessageBox.YES or ans==True:
+            self.quit()
+
+    def probeTool(self):
+        #get probe offset by probing tool
+        ProbeXLocation = Utils.getFloat("Probe", "x", -10) + (2*random.random())
+        ProbeYLocation = Utils.getFloat("Probe", "y", -25) + (random.random() - random.random())
+        #height of the gauge block/toolsetter.
+        ProbeZoffsetLocation = Utils.getFloat("Machine", "zprobe", 20.711)
+        ProbeFastSpeed = Utils.getFloat("Probe", "fastfeed", 100)
+        #ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
+
+        try:
+            self.sendGCode("$X")
+            lines = []
+            lines.append("$H")
+            lines.append("G53 G0 X%s Y%s Z%s" %(ProbeXLocation, ProbeYLocation, -2))
+            lines.append("%wait")
+            lines.append("G91 G38.2 Z-20 F%s" %(ProbeFastSpeed))
+            lines.append("%wait")
+            #set the G54 for positive space with the tip of the tool at the top of the table
+            #lines.append("G90 G10L20P0Z%s" %(ProbeZoffsetLocation))
+            lines.append("G90 G10L20P1Z%s" %(ProbeZoffsetLocation))
+            ## Adjust the current WCS to fit to the tool
+            lines.append("G53 G0Z-2")
+            self.run(lines = lines)
+        except:
+            pass
+
     def drawText(self):
         fontPath = os.path.join(Utils.prgpath, 'fonts')
         fontFileName   = join(fontPath, self.pfont.fontCombo.get())
@@ -2513,9 +2517,7 @@ class Application(Toplevel,Sender):
         ProbeSpeed = Utils.getFloat("Probe", "feed", 10)
         
         #clear out any old tag information
-        originX = Utils.getFloat("Machine", 'xmax')
-        originY = Utils.getFloat("Machine", 'ymax')
-        self.initHeader(originX, originY, self.localtags.origin['Z'])
+        self.initHeader(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
 
         try:
             import ttf
@@ -2557,7 +2559,12 @@ class Application(Toplevel,Sender):
             #probe
             probeBlock.append("G91 G38.2 Z-3 F%s" %(ProbeSpeed))
             probeBlock.append("%wait")
-            probeBlock.append("G10L20P0Z0")
+            #probeBlock.append("G10L20P0Z0")
+            #G10 L20 is similar to G10 L2, except that instead of setting the offset/entry to the given value, 
+            #it is set to a calculated value that makes the current coordinates become the given value.
+            #Program: G10 L20 P~ X~ Y~ Z~ A~ #P~ is the number of coordinate system to use (G54 = 1, G59.3 = 9)
+            #X~ is the X-axis coordinate, etc.
+            probeBlock.append("G10L20P1Z0")
             probeBlock.append("%wait")
             block.append("G54")
             block.append("G90")
@@ -2649,144 +2656,9 @@ class Application(Toplevel,Sender):
         self.notebook.select(1)
         self.canvas.fit2Screen()
         self.refresh()
-
-    def drawText_old(self):
-        fontPath = os.path.join(Utils.prgpath, 'fonts')
-        fontFileName   = join(fontPath, self.pfont.fontCombo.get())
-        if fontFileName == "":
-            self.setStatus(_("Text abort: please select a font file"))
-            return
-        depth = -float(self.engrave.depth.get())
-        retractZ = float(self.engrave.retractZ.get())
-        CNC.vars["safe"] = retractZ
-        clearanceZ = float(self.engrave.clearanceZ.get())
         
-        #clear out any old tag information
-        #self.initializeGcodeforText(self.localtags.origin['X'], self.localtags.origin['Y'], self.localtags.origin['Z'])
-        originX = Utils.getFloat("Machine", 'xmax')
-        originY = Utils.getFloat("Machine", 'ymax')
-        self.initializeGcodeforText(originX, originY, self.localtags.origin['Z'])
-
-        try:
-            import ttf
-            font = ttf.TruetypeInfo(fontFileName)
-        except:
-            self.setStatus(_("Text abort: That embarrassing, I can't read this font file!"))
-            return
-        
-        for plate in self.itemstoEngrave:
-            
-            t = self.localtags.tag[plate.numTag]
-            ##Get inputs
-            tagHeight = abs(t['y1']-t['y0'])
-            tagWidth = abs(t['x1']-t['x0'])
-            textToWrite   = plate.text.get()
-
-            #charsWidth    = self["CharsWidth"]
-            #charsWidth     = int(self.font.charspacing.get())
-
-            #Check parameters!!!
-            if textToWrite == "":
-                textToWrite = "Nel mezzo del cammin di nostra vita..."
-                continue
-
-            #Init blocks
-            blocks = []
-            n = textToWrite
-            if not n or n == "default": n = "Text"
-            block = Block(n)
-            if(u'\n' in  textToWrite):
-                block.append("(Text:)")
-                for line in textToWrite.splitlines():
-                    block.append("(%s)" % line)
-            else:
-                block.append("(Text: %s)" % textToWrite)
-
-            cmap = font.get_character_map()
-            kern = None
-            try:
-                kern = font.get_glyph_kernings()
-            except:
-                pass
-            adv = font.get_glyph_advances()
-
-            #xOffset = 0
-            #yOffset = 0
-            dx= float(t['x0'])
-            dy= float(t['y0'])
-            #If there are only a few characters, 
-            #the fontsize being the height of the tag works
-            #however, longer tags need to be resized
-            glyphLength = 0
-            for c in textToWrite:
-                if c == u'\n':
-                    xOffset = 0.0
-                    yOffset -= 1#offset for new line
-                    continue
-                if c in cmap:
-                    glyphIndx = cmap[c]
-                glyphLength += adv[glyphIndx]
-
-            fontSize = 0
-            if (glyphLength*tagHeight )> tagWidth:
-                fontSize = tagWidth/glyphLength
-            else:
-                fontSize = tagHeight
-            #offset the height difference
-            dy = dy + (tagHeight-fontSize)/2
-            #offset to center the text
-            dx = dx + (tagWidth - glyphLength*fontSize)/2
-
-            glyphIndxLast = cmap[' ']
-            xOffset = dx/fontSize
-            yOffset = dy/fontSize
-            #create the characters
-            for c in textToWrite:
-	            #New line
-                if c == u'\n':
-                    xOffset = 0.0
-                    yOffset -= 1#offset for new line
-                    continue
-
-                if c in cmap:
-                    glyphIndx = cmap[c]
-
-                    if (kern and (glyphIndx,glyphIndxLast) in kern):
-                        k = kern[(glyphIndx,glyphIndxLast)] #FIXME: use kern for offset??
-
-	                #Get glyph contours as line segmentes and draw them
-                    gc = font.get_glyph_contours(glyphIndx)
-                    if(not gc):
-                        gc = font.get_glyph_contours(0)#standard glyph for missing glyphs (complex glyph)
-                    if(gc and not c==' '): #FIXME: for some reason space is not mapped correctly!!!
-                        self.writeGlyphContour(block, font, gc, fontSize, depth, xOffset, yOffset, retractZ)
-                    if glyphIndx < len(adv):
-                        xOffset += adv[glyphIndx]
-                    else:
-                        xOffset += 1
-                    glyphIndxLast = glyphIndx
-            #Gcode Zsafe
-            block.append(CNC.zexit(clearanceZ))
-
-            #self.gcode.moveLines(block.path, dx, dy)
-            blocks.append(block)
-            #active = self.activeBlock()
-            #if active==0: active=1
-            if (len(self.gcode.blocks) == 0):
-                index = 1 
-            else:
-                index = len(self.gcode.blocks)-1
-            self.gcode.insBlocks(index, blocks, "Text")
-            self.refresh()
-
-        #Remember to close Font
-        font.close()
-        self.notebook.select(1)
-        self.canvas.fit2Screen()
-        self.refresh()
-
-        #Write GCode from glyph conrtours
     def writeGlyphContour(self,block,font,contours,fontSize,depth,xO, yO, retractZ):
+        #Write GCode from glyph contours
         #width = font.header.x_max - font.header.x_min
         #height = font.header.y_max - font.header.y_min
         scale = fontSize / font.header.units_per_em
@@ -2801,22 +2673,12 @@ class Application(Toplevel,Sender):
             for p in cont:
                 block.append(CNC.gline(xO + p.x * scale, yO + p.y * scale))
 
-    def initializeGcodeforText(self, originX, originY, originZ):
-        #custom header just for tags
-        #headGcode = "$H \n $G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
-        # $H = means home the machine.  $G means View gcode parser state
-        #headGcode = "$G \n G10L20P0X%sY%sZ%s \n G0X%s \n M3 \n S12000" %(originX, originY, originZ, (originX/2))
-
-        #G10 L2 move a coordinate system relative to G53
-        # P1 equals G54.
-        headGcode = "$H \n $G \n G10L2P1X%sY%s \n G0X%s \n M3 \n S12000" %(-originX, -originY, (originX/2))
-        self.gcode.header = headGcode
-        #clear out any old tag information
-        self.newFile(prompt = FALSE)
-
     def initHeader(self, originX, originY, originZ):
-        # P1 equals G54.
-        headGcode = "$G \n G10L2P1X%sY%s \n G43.1Z%s \n G0X%s M3 S12000" %(-originX, -originY, originZ, (originX/2))
+        # P1 equals G54.  G43.1Z%s \n \n G43.1Z%s 
+        #G10L2P1X%sY%sZ%s set the work coordinate offset to these values.
+        #G53G90G0Z-1 lift the tool up to 1 mm shy of  fully retracted with respect to machine coordinate system.
+        #G0X%s \n
+        headGcode = "$G \n G10L2P1X%sY%sZ%s \n G53G0Z-1 \n M3 S12000" %(-originX, -originY, -originZ)
         self.gcode.header = headGcode
         #clear out any old tag information
         self.newFile(prompt = FALSE)
